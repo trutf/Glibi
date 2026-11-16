@@ -30,17 +30,17 @@ declare global {
   }
 }
 
-const ITEMS_PER_PAGE = 18; // Sayfa başına 24 oyun
+const ITEMS_PER_PAGE = 36; // 4 tam satır x 9 sütun
 
 // Store Featured Categories
 const featuredCategories = [
   {
     id: "top-played",
     badge: "EN ÇOK OYNANAN",
-    title: "Counter-Strike 2",
-    appId: 730,
-    sub: "1.2M+ Anlık Oyuncu",
-    coverId: "cs2",
+    title: "Cyberpunk 2077",
+    appId: 1091500,
+    sub: "Night City Macerası",
+    coverId: "cyberpunk2077",
   },
   {
     id: "new-release",

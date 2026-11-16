@@ -91,12 +91,10 @@ function createWindow() {
     }
   });
 
-  // Kütüphanedeki oyunları getir
   ipcMain.handle("get-installed-games", async () => {
     return loadInstalledGames();
   });
 
-  // Oyun klasörünü dosya yöneticisinde aç
   ipcMain.on("open-game-folder", (_event, folderPath) => {
     if (folderPath && fs.existsSync(folderPath)) {
       shell.showItemInFolder(folderPath);
@@ -106,7 +104,6 @@ function createWindow() {
     }
   });
 
-  // Oyunu kütüphaneden sil
   ipcMain.handle("uninstall-game", async (_event, gameTitle) => {
     let list = loadInstalledGames();
     list = list.filter((g) => g.gameTitle.toLowerCase() !== gameTitle.toLowerCase());
@@ -114,7 +111,7 @@ function createWindow() {
     return list;
   });
 
-  // 📥 GERÇEK İNDİRME MOTORU (Real HTTP/HTTPS & Cloudflare-Bypassing Crawler)
+  // 📥 GERÇEK İNDİRME MOTORU
   ipcMain.on("start-game-download", async (event, { gameTitle, appId, directUrl, host }) => {
     const downloadDir = path.join(app.getPath("downloads"), "Glibi Games");
     if (!fs.existsSync(downloadDir)) {
@@ -138,9 +135,14 @@ function createWindow() {
  * Cloudflare Korumasını Aşarak SteamRIP & Buzzheavier Bağlantılarını Çözümle
  */
 async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
-  sendProgress(gameTitle, "resolving", 2, "SteamRIP taranıyor (Cloudflare bypass)...", targetFile);
+  sendProgress(gameTitle, "resolving", 5, "SteamRIP taranıyor...", targetFile);
 
-  const cleanTitle = gameTitle.replace(/[:™®©]/g, "").replace(/ - .*/g, "").trim();
+  const cleanTitle = gameTitle
+    .replace(/[:™®©]/g, "")
+    .replace(/ - .*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
   const searchUrl = `https://steamrip.com/?s=${encodeURIComponent(cleanTitle)}`;
 
   let crawlerWin = null;
@@ -154,6 +156,7 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
       },
     });
 
+    // 1. SteamRIP arama sayfasını yükle
     await crawlerWin.loadURL(searchUrl);
     await new Promise((r) => setTimeout(r, 3500));
 
@@ -169,33 +172,54 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
       targetPostUrl = `https://steamrip.com/${slug}-free-download/`;
     }
 
-    sendProgress(gameTitle, "resolving", 15, "İndirme bağlantıları ayıklanıyor...", targetFile);
+    sendProgress(gameTitle, "resolving", 25, "İndirme bağlantıları taranıyor...", targetFile);
     await crawlerWin.loadURL(targetPostUrl);
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 3500));
 
-    // Makale içindeki Buzzheavier / bzzhr / Gofile indirme linklerini al
+    // Makale içindeki indirme linklerini ve Buzzheavier / bzzhr linklerini yakala
     const hostLinks = await crawlerWin.webContents.executeJavaScript(`
-      Array.from(document.querySelectorAll("a[href*='buzzheavier'], a[href*='bzzhr'], a[href*='gofile.io']")).map(a => a.href)
+      Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.includes("buzzheavier") || h.includes("bzzhr") || h.includes("gofile.io"))
     `);
 
     let selectedHostLink = hostLinks && hostLinks.length > 0 ? hostLinks[0] : null;
 
     if (selectedHostLink) {
-      sendProgress(gameTitle, "resolving", 30, "Doğrudan indirme akışı çözülüyor...", targetFile);
-      // Buzzheavier sayfasına gidip doğrudan stream linkini çek
-      await crawlerWin.loadURL(selectedHostLink);
-      await new Promise((r) => setTimeout(r, 3000));
+      sendProgress(gameTitle, "resolving", 50, "Buzzheavier çözülüyor...", targetFile);
 
-      const directStream = await crawlerWin.webContents.executeJavaScript(`
+      // Buzzheavier sayfasına SteamRIP referer ile git
+      await crawlerWin.loadURL(selectedHostLink, {
+        httpReferrer: targetPostUrl,
+      });
+      await new Promise((r) => setTimeout(r, 4000));
+
+      // Buzzheavier token ve indirme path'ini çek
+      const tokenPath = await crawlerWin.webContents.executeJavaScript(`
         (() => {
-          const dlBtn = document.querySelector("a[href*='/download/'], a[href*='/get/'], a[href*='/stream/'], a[data-url]");
-          if (dlBtn) return dlBtn.href || dlBtn.getAttribute('data-url');
-          return window.location.href;
+          const copyBtn = document.querySelector(".copy");
+          if (copyBtn) {
+            const onclick = copyBtn.getAttribute("onclick");
+            const m = onclick && onclick.match(/copyDownloadLink\\('([^']+)'\\)/);
+            if (m) return m[1].replace(/\\\\/g, "");
+          }
+          const dlBtn = document.querySelector("a[href*='/download'], a[data-url]");
+          if (dlBtn) return dlBtn.href || dlBtn.getAttribute("data-url");
+          return null;
         })()
       `);
 
-      const finalUrl = directStream || (selectedHostLink.endsWith("/download") ? selectedHostLink : `${selectedHostLink}/download`);
-      console.log(`[Crawler Başarılı] Çözülen indirme adresi: ${finalUrl}`);
+      let finalUrl = "";
+      if (tokenPath) {
+        if (tokenPath.startsWith("http://") || tokenPath.startsWith("https://")) {
+          finalUrl = tokenPath;
+        } else {
+          const origin = new URL(crawlerWin.webContents.getURL()).origin;
+          finalUrl = `${origin}${tokenPath.startsWith("/") ? "" : "/"}${tokenPath}`;
+        }
+      } else {
+        finalUrl = selectedHostLink.endsWith("/download") ? selectedHostLink : `${selectedHostLink}/download`;
+      }
+
+      console.log(`[Crawler Başarılı] Gerçek indirme linki çözüldü: ${finalUrl}`);
       crawlerWin.destroy();
       crawlerWin = null;
 
@@ -210,7 +234,6 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
     }
   }
 
-  // Eğer oyun SteamRIP'te bulunamazsa veya bağlantı başarısız olursa güvenli indirme simülatörü
   startFallbackDownload(gameTitle, appId, targetFile);
 }
 
@@ -222,7 +245,7 @@ function startHttpDownload(gameTitle, appId, directUrl, targetFile) {
       {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          Referer: "https://steamrip.com/",
+          Referer: "https://bzzhr.to/",
         },
       },
       (res) => {
