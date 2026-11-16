@@ -5,6 +5,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   minimize: () => ipcRenderer.send("window-minimize"),
   maximize: () => ipcRenderer.send("window-maximize"),
   startDownload: (options) => ipcRenderer.send("start-game-download", options),
+  pauseDownload: (gameTitle) => ipcRenderer.send("pause-game-download", gameTitle),
+  resumeDownload: (gameTitle) => ipcRenderer.send("resume-game-download", gameTitle),
+  cancelDownload: (gameTitle) => ipcRenderer.send("cancel-game-download", gameTitle),
   onDownloadProgress: (callback) => {
     ipcRenderer.on("download-progress-update", (_event, data) => callback(data));
   },

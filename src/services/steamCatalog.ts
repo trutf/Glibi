@@ -1,159 +1,116 @@
-/**
- * Steam Catalog Service
- * Steam ve SteamSpy üzerinden en popüler ücretli, kırılmış oyunları dinamik olarak çeker.
- * Ücretsiz (Free-to-Play) oyunlar SteamRIP launcher'ında listelenmez.
- */
+import steamripData from "../data/steamrip_catalog.json";
 
 export interface CatalogGame {
   id: string;
   appId: number;
   title: string;
+  ripUrl?: string;
 }
 
-// Bilinen Ücretsiz (Free-to-Play) oyun ID'leri kara listesi
+// Bilinen F2P kara listesi
 export const FREE_TO_PLAY_APP_IDS = new Set([
-  730,     // CS2
-  570,     // Dota 2
-  578080,  // PUBG: BATTLEGROUNDS
-  1172470, // Apex Legends
-  440,     // Team Fortress 2
-  230410,  // Warframe
-  304930,  // Unturned
-  1085660, // Destiny 2
-  238960,  // Path of Exile
-  2694490, // Path of Exile 2
-  2073850, // THE FINALS
-  1938090, // Call of Duty HQ / Warzone
-  2767030, // Marvel Rivals
-  1599340, // Lost Ark
-  291550,  // Brawlhalla
-  1407200, // World of Tanks
-  236390,  // War Thunder
-  1677740, // Stumble Guys
-  1782210, // Crab Game
-  2709570, // Supermarket Together
-  223750,  // DCS World
-  225840,  // Sven Co-op
-  224260,  // No More Room in Hell
-  218230,  // PlanetSide 2
-  211500,  // RaceRoom
-  113400,  // APB Reloaded
-  109600,  // Neverwinter
-  304050,  // Trove
-  1665460, // eFootball
-  1721470, // Poppy Playtime
+  730, 570, 578080, 1172470, 440, 230410, 304930, 1085660, 238960, 2694490, 2073850, 1938090, 2767030,
+  1599340, 291550, 1407200, 236390, 1677740, 1782210, 2709570, 223750, 225840, 224260, 218230, 211500,
 ]);
 
-// Varsayılan zengin ÇEKİRDEK ÜCRETLİ OYUN LİSTESİ (Crack / SteamRIP odaklı)
-export const DEFAULT_POPULAR_GAMES: CatalogGame[] = [
-  { id: "blackmyth", appId: 2358720, title: "Black Myth: Wukong" },
-  { id: "helldivers2", appId: 553850, title: "HELLDIVERS™ 2" },
-  { id: "baldursgate3", appId: 1086940, title: "Baldur's Gate 3" },
-  { id: "cyberpunk2077", appId: 1091500, title: "Cyberpunk 2077" },
-  { id: "eldenring", appId: 1245620, title: "Elden Ring" },
-  { id: "witcher3", appId: 292030, title: "The Witcher 3: Wild Hunt" },
-  { id: "rdr2", appId: 1174180, title: "Red Dead Redemption II" },
-  { id: "godofwar", appId: 1593500, title: "God of War Ragnarök" },
-  { id: "hades2", appId: 1145350, title: "Hades II" },
-  { id: "palworld", appId: 1623730, title: "Palworld" },
-  { id: "rust", appId: 252490, title: "Rust" },
-  { id: "gtav", appId: 271590, title: "Grand Theft Auto V" },
-  { id: "forza5", appId: 1551360, title: "Forza Horizon 5" },
-  { id: "ets2", appId: 227300, title: "Euro Truck Simulator 2" },
-  { id: "lethalcompany", appId: 1966720, title: "Lethal Company" },
-  { id: "terraria", appId: 105600, title: "Terraria" },
-  { id: "stardewvalley", appId: 413150, title: "Stardew Valley" },
-  { id: "skyrim", appId: 489830, title: "The Elder Scrolls V: Skyrim Special Edition" },
-  { id: "monsterhunter", appId: 582010, title: "Monster Hunter: World" },
-  { id: "seaofthieves", appId: 1172620, title: "Sea of Thieves" },
-  { id: "hollowknight", appId: 367520, title: "Hollow Knight" },
-  { id: "factorio", appId: 427520, title: "Factorio" },
-  { id: "subnautica", appId: 264710, title: "Subnautica" },
-  { id: "valheim", appId: 892970, title: "Valheim" },
-  { id: "phasmophobia", appId: 739630, title: "Phasmophobia" },
-  { id: "projectzomboid", appId: 108600, title: "Project Zomboid" },
-  { id: "arma3", appId: 107410, title: "Arma 3" },
-  { id: "borderlands2", appId: 49520, title: "Borderlands 2" },
-  { id: "bioshockinfinite", appId: 8870, title: "BioShock Infinite" },
-  { id: "tombraider", appId: 203160, title: "Tomb Raider" },
-  { id: "portal2", appId: 620, title: "Portal 2" },
-  { id: "garrysmod", appId: 4000, title: "Garry's Mod" },
-  { id: "fallout4", appId: 377160, title: "Fallout 4" },
-  { id: "payday2", appId: 218620, title: "PAYDAY 2" },
-  { id: "left4dead2", appId: 550, title: "Left 4 Dead 2" },
-  { id: "hl2", appId: 220, title: "Half-Life 2" },
-];
+// Popüler bilinen oyunların AppID haritası
+const KNOWN_APP_IDS: Record<string, number> = {
+  "black myth: wukong": 2358720,
+  "helldivers 2": 553850,
+  "baldurs gate 3": 1086940,
+  "baldur's gate 3": 1086940,
+  "cyberpunk 2077": 1091500,
+  "elden ring": 1245620,
+  "the witcher 3: wild hunt": 292030,
+  "red dead redemption 2": 1174180,
+  "red dead redemption ii": 1174180,
+  "god of war ragnarok": 1593500,
+  "god of war ragnarök": 1593500,
+  "god of war": 1593500,
+  "hades ii": 1145350,
+  "hades 2": 1145350,
+  "palworld": 1623730,
+  "rust": 252490,
+  "grand theft auto v": 271590,
+  "gta v": 271590,
+  "forza horizon 5": 1551360,
+  "euro truck simulator 2": 227300,
+  "lethal company": 1966720,
+  "terraria": 105600,
+  "stardew valley": 413150,
+  "the elder scrolls v: skyrim special edition": 489830,
+  "skyrim": 489830,
+  "monster hunter: world": 582010,
+  "sea of thieves": 1172620,
+  "hollow knight": 367520,
+  "factorio": 427520,
+  "subnautica": 264710,
+  "valheim": 892970,
+  "phasmophobia": 739630,
+  "project zomboid": 108600,
+  "arma 3": 107410,
+  "borderlands 2": 49520,
+  "bioshock infinite": 8870,
+  "tomb raider": 203160,
+  "portal 2": 620,
+  "garry's mod": 4000,
+  "fallout 4": 377160,
+  "payday 2": 218620,
+  "left 4 dead 2": 550,
+  "half-life 2": 220,
+  "geometry dash": 322170,
+  "dead cells": 588650,
+  "cuphead": 268910,
+  "celeste": 504230,
+  "undertale": 391540,
+  "sekiro: shadows die twice": 814380,
+  "dark souls iii": 374320,
+  "sifu": 2138710,
+  "lies of p": 1627720,
+};
 
-let catalogCache: CatalogGame[] | null = null;
+// SteamRIP'teki TÜM 4,973 oyunu Store kataloğuna dönüştür
+export const ALL_STEAMRIP_GAMES: CatalogGame[] = (steamripData as any[]).map((item, index) => {
+  const lower = item.title.toLowerCase().trim();
+  let appId = KNOWN_APP_IDS[lower] || 0;
 
-/**
- * SteamSpy Top 100 API'si üzerinden sadece ÜCRETLİ (cracked/indirilebilir) oyunları çeker.
- */
-export async function fetchTopSteamGames(): Promise<CatalogGame[]> {
-  if (catalogCache && catalogCache.length > 0) {
-    return catalogCache;
-  }
-
-  try {
-    const res = await fetch("https://steamspy.com/api.php?request=top100in2weeks");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    const games: CatalogGame[] = Object.values(data)
-      .filter((item: any) => {
-        const appId = Number(item.appid);
-        const price = String(item.price || "0");
-        // Bedava oyunları ve bilinen F2P oyunları temizle
-        if (FREE_TO_PLAY_APP_IDS.has(appId)) return false;
-        if (price === "0" && !item.initialprice) return false;
-        return true;
-      })
-      .map((item: any) => ({
-        id: `steam_${item.appid}`,
-        appId: Number(item.appid),
-        title: item.name,
-      }));
-
-    if (games.length > 0) {
-      catalogCache = games;
-      return games;
+  if (!appId) {
+    for (const [key, id] of Object.entries(KNOWN_APP_IDS)) {
+      if (lower.includes(key) || key.includes(lower)) {
+        appId = id;
+        break;
+      }
     }
-  } catch (err) {
-    console.warn("SteamSpy top games fetch error, using default full catalog", err);
   }
 
-  return DEFAULT_POPULAR_GAMES;
+  // Hash ile deterministik fallback appId
+  if (!appId) {
+    let hash = 0;
+    for (let i = 0; i < lower.length; i++) {
+      hash = (hash << 5) - hash + lower.charCodeAt(i);
+      hash |= 0;
+    }
+    appId = Math.abs(hash) % 900000 + 100000;
+  }
+
+  const safeId = item.title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  return {
+    id: `rip_${index}_${safeId}`,
+    appId,
+    title: item.title,
+    ripUrl: item.ripUrl,
+  };
+});
+
+export const DEFAULT_POPULAR_GAMES: CatalogGame[] = ALL_STEAMRIP_GAMES.slice(0, 500);
+
+export async function fetchTopSteamGames(): Promise<CatalogGame[]> {
+  return ALL_STEAMRIP_GAMES;
 }
 
-/**
- * Steam Store Search API üzerinden oyun arar (F2P oyunları filtreler)
- */
 export async function searchSteamStore(query: string): Promise<CatalogGame[]> {
-  if (!query.trim()) return [];
+  const q = query.toLowerCase().trim();
+  if (!q) return ALL_STEAMRIP_GAMES.slice(0, 72);
 
-  try {
-    const url = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(
-      query
-    )}&l=turkish&cc=TR`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-
-    if (json.items && json.items.length > 0) {
-      return json.items
-        .filter((item: any) => !FREE_TO_PLAY_APP_IDS.has(Number(item.id)))
-        .map((item: any) => ({
-          id: `steam_${item.id}`,
-          appId: Number(item.id),
-          title: item.name,
-        }));
-    }
-  } catch (err) {
-    console.warn("Steam search API error, falling back to local filter", err);
-  }
-
-  const full = catalogCache || DEFAULT_POPULAR_GAMES;
-  return full.filter(
-    (g) => !FREE_TO_PLAY_APP_IDS.has(g.appId) && g.title.toLowerCase().includes(query.toLowerCase())
-  );
+  return ALL_STEAMRIP_GAMES.filter((g) => g.title.toLowerCase().includes(q));
 }

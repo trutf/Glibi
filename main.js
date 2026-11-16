@@ -15,6 +15,9 @@ let mainWindow = null;
 let libraryDataPath = "";
 let settingsDataPath = "";
 
+// İndirme oturumlarını yönetme (Duraklat, Devam et, İptal)
+const activeDownloads = new Map();
+
 function getLibraryPath() {
   if (!libraryDataPath) {
     const userData = app.getPath("userData");
@@ -217,9 +220,6 @@ function findGameExecutable(dirPath) {
   return foundExes[0].path;
 }
 
-/**
- * İndirilen Zip / Rar / 7z arşivini unrar veya unzip ile arka planda çıkar
- */
 function extractGameArchive(archivePath, targetDir) {
   return new Promise((resolve) => {
     if (!fs.existsSync(targetDir)) {
@@ -239,13 +239,12 @@ function extractGameArchive(archivePath, targetDir) {
       execSync(cmd, { timeout: 180000 });
       console.log(`[Arşiv Çıkarıldı]: ${archivePath} -> ${targetDir}`);
     } catch (e) {
-      console.warn("execSync arşiv çıkarma uyarısı:", e.message);
+      console.warn("execSync arşiv çıkarma:", e.message);
       try {
         execSync(`7z x -y -o"${targetDir}" "${archivePath}" >/dev/null 2>&1`, { timeout: 180000 });
       } catch {}
     }
 
-    // Geçici arşivi temizle
     try {
       if (fs.existsSync(archivePath) && fs.statSync(archivePath).isFile()) {
         fs.unlinkSync(archivePath);
@@ -320,7 +319,6 @@ function createWindow() {
     return list;
   });
 
-  // 🍷 WINE İLE OYUNU BAŞLAT
   ipcMain.handle("launch-game", async (_event, gameTitle) => {
     const list = loadInstalledGames();
     const game = list.find((g) => g.gameTitle.toLowerCase() === gameTitle.toLowerCase());
@@ -363,8 +361,52 @@ function createWindow() {
     }
   });
 
-  // 📥 GERÇEK İNDİRME MOTORU
-  ipcMain.on("start-game-download", async (event, { gameTitle, appId, directUrl, host }) => {
+  // İndirme Kontrolleri: Duraklat / Devam Et / İptal Et
+  ipcMain.on("pause-game-download", (_event, gameTitle) => {
+    const key = gameTitle.toLowerCase();
+    const session = activeDownloads.get(key);
+    if (session && session.req && session.status === "downloading") {
+      session.isPaused = true;
+      session.req.destroy();
+      session.status = "paused";
+      sendProgress(gameTitle, session.appId, "paused", session.lastPercent || 0, "Duraklatıldı", session.tempArchive);
+      console.log(`[İndirme Duraklatıldı]: ${gameTitle}`);
+    }
+  });
+
+  ipcMain.on("resume-game-download", (_event, gameTitle) => {
+    const key = gameTitle.toLowerCase();
+    const session = activeDownloads.get(key);
+    if (session && session.status === "paused") {
+      session.isPaused = false;
+      session.status = "downloading";
+      console.log(`[İndirme Devam Ettiriliyor]: ${gameTitle}`);
+      startHttpDownload(gameTitle, session.appId, session.directUrl, session.tempArchive, session.extractDir, session.receivedBytes || 0);
+    }
+  });
+
+  ipcMain.on("cancel-game-download", (_event, gameTitle) => {
+    const key = gameTitle.toLowerCase();
+    const session = activeDownloads.get(key);
+    if (session) {
+      if (session.crawlerWin && !session.crawlerWin.isDestroyed()) {
+        session.crawlerWin.destroy();
+      }
+      if (session.req) {
+        session.req.destroy();
+      }
+      try {
+        if (fs.existsSync(session.tempArchive)) {
+          fs.unlinkSync(session.tempArchive);
+        }
+      } catch {}
+      activeDownloads.delete(key);
+      sendProgress(gameTitle, session.appId, "idle", 0, "", "");
+      console.log(`[İndirme İptal Edildi]: ${gameTitle}`);
+    }
+  });
+
+  ipcMain.on("start-game-download", async (event, { gameTitle, appId, directUrl, ripUrl }) => {
     const safeTitle = gameTitle.replace(/[^a-zA-Z0-9_-]/g, "_");
     const gamesDir = getGamesInstallDir();
     const extractDir = path.join(gamesDir, safeTitle);
@@ -372,19 +414,35 @@ function createWindow() {
 
     console.log(`[GERÇEK İNDİRME] Başlatılıyor: ${gameTitle} (AppID: ${appId})`);
 
+    const key = gameTitle.toLowerCase();
+    activeDownloads.set(key, {
+      gameTitle,
+      appId,
+      tempArchive,
+      extractDir,
+      status: "resolving",
+      isPaused: false,
+      receivedBytes: 0,
+      totalBytes: 0,
+      directUrl: directUrl || "",
+    });
+
     if (directUrl && (directUrl.startsWith("http://") || directUrl.startsWith("https://"))) {
-      startHttpDownload(gameTitle, appId, directUrl, tempArchive, extractDir);
+      startHttpDownload(gameTitle, appId, directUrl, tempArchive, extractDir, 0);
     } else {
-      resolveSteamripWithElectron(gameTitle, appId, tempArchive, extractDir);
+      resolveSteamripWithElectron(gameTitle, appId, tempArchive, extractDir, ripUrl);
     }
   });
 }
 
 /**
- * Cloudflare Korumasını Aşarak SteamRIP & Buzzheavier Bağlantılarını Çözümle
+ * Hızlı ve Optimize SteamRIP / Buzzheavier Link Çözücü
  */
-async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extractDir) {
-  sendProgress(gameTitle, appId, "resolving", 5, "SteamRIP taranıyor...", tempArchive);
+async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extractDir, knownRipUrl) {
+  sendProgress(gameTitle, appId, "resolving", 10, "Bağlantı taranıyor...", tempArchive);
+
+  const key = gameTitle.toLowerCase();
+  const session = activeDownloads.get(key);
 
   const cleanTitle = gameTitle
     .replace(/[:™®©]/g, "")
@@ -392,7 +450,7 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
     .replace(/\s+/g, " ")
     .trim();
 
-  const searchUrl = `https://steamrip.com/?s=${encodeURIComponent(cleanTitle)}`;
+  let targetPostUrl = knownRipUrl;
 
   let crawlerWin = null;
   try {
@@ -400,29 +458,31 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
       show: false,
       width: 1024,
       height: 768,
-      webPreferences: {
-        offscreen: false,
-      },
+      webPreferences: { offscreen: false },
     });
 
-    await crawlerWin.loadURL(searchUrl);
-    await new Promise((r) => setTimeout(r, 4000));
+    if (session) session.crawlerWin = crawlerWin;
 
-    const postUrls = await crawlerWin.webContents.executeJavaScript(`
-      Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.startsWith("https://steamrip.com/") && h.includes("-free-download"))
-    `);
-
-    let targetPostUrl = postUrls && postUrls.length > 0 ? postUrls[0] : null;
-
+    // Eğer doğrudan bilinen SteamRIP URL'si yoksa ara
     if (!targetPostUrl) {
-      const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-      targetPostUrl = `https://steamrip.com/${slug}-free-download/`;
+      const searchUrl = `https://steamrip.com/?s=${encodeURIComponent(cleanTitle)}`;
+      await crawlerWin.loadURL(searchUrl);
+      await new Promise((r) => setTimeout(r, 2500));
+
+      const postUrls = await crawlerWin.webContents.executeJavaScript(`
+        Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.startsWith("https://steamrip.com/") && h.includes("-free-download"))
+      `);
+
+      targetPostUrl = postUrls && postUrls.length > 0 ? postUrls[0] : null;
+      if (!targetPostUrl) {
+        const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        targetPostUrl = `https://steamrip.com/${slug}-free-download/`;
+      }
     }
 
-    console.log(`[Crawler] Post linkine gidiliyor: ${targetPostUrl}`);
-    sendProgress(gameTitle, appId, "resolving", 25, "İndirme bağlantıları taranıyor...", tempArchive);
+    sendProgress(gameTitle, appId, "resolving", 35, "Sunucu linki çözülüyor...", tempArchive);
     await crawlerWin.loadURL(targetPostUrl);
-    await new Promise((r) => setTimeout(r, 4000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     const hostLinks = await crawlerWin.webContents.executeJavaScript(`
       (() => {
@@ -439,27 +499,31 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
     let selectedHostLink = hostLinks && hostLinks.length > 0 ? hostLinks[0] : null;
 
     if (selectedHostLink) {
-      console.log(`[Crawler] Hedef dosya sunucusu: ${selectedHostLink}`);
-      sendProgress(gameTitle, appId, "resolving", 50, "Buzzheavier çözülüyor...", tempArchive);
+      sendProgress(gameTitle, appId, "resolving", 65, "İndirme akışı başlatılıyor...", tempArchive);
 
       await crawlerWin.loadURL(selectedHostLink, {
         httpReferrer: targetPostUrl,
       });
-      await new Promise((r) => setTimeout(r, 4000));
 
-      const tokenPath = await crawlerWin.webContents.executeJavaScript(`
-        (() => {
-          const copyBtn = document.querySelector(".copy");
-          if (copyBtn) {
-            const onclick = copyBtn.getAttribute("onclick");
-            const m = onclick && onclick.match(/copyDownloadLink\\('([^']+)'\\)/);
-            if (m) return m[1].replace(/\\\\/g, "");
-          }
-          const dlBtn = document.querySelector("a[href*='/download'], a[data-url]");
-          if (dlBtn) return dlBtn.href || dlBtn.getAttribute("data-url");
-          return null;
-        })()
-      `);
+      // Buzzheavier tokenını hızlıca polling yaparak yakala (gereksiz 4sn beklemeden)
+      let tokenPath = null;
+      for (let i = 0; i < 25; i++) {
+        await new Promise((r) => setTimeout(r, 200));
+        tokenPath = await crawlerWin.webContents.executeJavaScript(`
+          (() => {
+            const copyBtn = document.querySelector(".copy");
+            if (copyBtn) {
+              const onclick = copyBtn.getAttribute("onclick");
+              const m = onclick && onclick.match(/copyDownloadLink\\('([^']+)'\\)/);
+              if (m) return m[1].replace(/\\\\/g, "");
+            }
+            const dlBtn = document.querySelector("a[href*='/download'], a[data-url]");
+            if (dlBtn) return dlBtn.href || dlBtn.getAttribute("data-url");
+            return null;
+          })()
+        `);
+        if (tokenPath) break;
+      }
 
       let finalUrl = "";
       const currentHostUrl = crawlerWin.webContents.getURL();
@@ -478,8 +542,9 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
       console.log(`[Crawler Başarılı] Gerçek stream URL: ${finalUrl}`);
       crawlerWin.destroy();
       crawlerWin = null;
+      if (session) session.crawlerWin = null;
 
-      startHttpDownload(gameTitle, appId, finalUrl, tempArchive, extractDir);
+      startHttpDownload(gameTitle, appId, finalUrl, tempArchive, extractDir, 0);
       return;
     }
   } catch (err) {
@@ -493,62 +558,88 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
   startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
 }
 
-function startHttpDownload(gameTitle, appId, directUrl, tempArchive, extractDir) {
+function startHttpDownload(gameTitle, appId, directUrl, tempArchive, extractDir, resumeFromByte = 0) {
+  const key = gameTitle.toLowerCase();
+  const session = activeDownloads.get(key) || {};
+  session.status = "downloading";
+  session.directUrl = directUrl;
+  session.appId = appId;
+  session.tempArchive = tempArchive;
+  session.extractDir = extractDir;
+  activeDownloads.set(key, session);
+
   try {
     const client = directUrl.startsWith("https://") ? https : http;
-    const req = client.get(
-      directUrl,
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          Referer: "https://bzzhr.to/",
-        },
-      },
-      (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          return startHttpDownload(gameTitle, appId, res.headers.location, tempArchive, extractDir);
-        }
+    const reqHeaders = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Referer: "https://bzzhr.to/",
+    };
+    if (resumeFromByte > 0) {
+      reqHeaders["Range"] = `bytes=${resumeFromByte}-`;
+    }
 
-        if (res.statusCode && res.statusCode >= 400) {
-          console.warn(`HTTP ${res.statusCode} hatası, fallback devreye alınıyor`);
-          return startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
-        }
+    const req = client.get(directUrl, { headers: reqHeaders }, (res) => {
+      session.req = req;
 
-        const totalBytes = parseInt(res.headers["content-length"] || "0", 10);
-        let receivedBytes = 0;
-        let startTime = Date.now();
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return startHttpDownload(gameTitle, appId, res.headers.location, tempArchive, extractDir, resumeFromByte);
+      }
 
-        const fileStream = fs.createWriteStream(tempArchive);
-        res.pipe(fileStream);
+      if (res.statusCode && res.statusCode >= 400) {
+        console.warn(`HTTP ${res.statusCode} hatası, fallback devreye alınıyor`);
+        return startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
+      }
 
-        res.on("data", (chunk) => {
-          receivedBytes += chunk.length;
-          const elapsedSeconds = (Date.now() - startTime) / 1000;
-          const speedMB = elapsedSeconds > 0 ? (receivedBytes / (1024 * 1024 * elapsedSeconds)).toFixed(1) : "0.0";
+      const contentLength = parseInt(res.headers["content-length"] || "0", 10);
+      const totalBytes = resumeFromByte > 0 ? (session.totalBytes || contentLength + resumeFromByte) : contentLength;
+      session.totalBytes = totalBytes;
+
+      let receivedBytes = resumeFromByte;
+      let startTime = Date.now();
+      let lastReportTime = Date.now();
+
+      const fileStream = fs.createWriteStream(tempArchive, { flags: resumeFromByte > 0 ? "a" : "w" });
+      res.pipe(fileStream);
+
+      res.on("data", (chunk) => {
+        receivedBytes += chunk.length;
+        session.receivedBytes = receivedBytes;
+
+        const now = Date.now();
+        if (now - lastReportTime > 250) {
+          lastReportTime = now;
+          const elapsedSeconds = (now - startTime) / 1000;
+          const speedMB = elapsedSeconds > 0 ? ((receivedBytes - resumeFromByte) / (1024 * 1024 * elapsedSeconds)).toFixed(1) : "0.0";
           const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 50;
+          session.lastPercent = percent;
 
           sendProgress(gameTitle, appId, "downloading", percent, `${speedMB} MB/s`, tempArchive);
-        });
+        }
+      });
 
-        fileStream.on("finish", async () => {
-          fileStream.close();
-          sendProgress(gameTitle, appId, "extracting", 95, "Arşiv çıkarılıyor...", extractDir);
+      fileStream.on("finish", async () => {
+        fileStream.close();
+        if (session.isPaused) return;
 
-          await extractGameArchive(tempArchive, extractDir);
+        sendProgress(gameTitle, appId, "extracting", 95, "Arşiv çıkarılıyor...", extractDir);
+        await extractGameArchive(tempArchive, extractDir);
 
-          const exePath = findGameExecutable(extractDir);
-          markGameInstalled(gameTitle, appId, tempArchive, extractDir, exePath);
-          sendProgress(gameTitle, appId, "completed", 100, "Tamamlandı", extractDir);
-        });
+        const exePath = findGameExecutable(extractDir);
+        markGameInstalled(gameTitle, appId, tempArchive, extractDir, exePath);
+        activeDownloads.delete(key);
+        sendProgress(gameTitle, appId, "completed", 100, "Tamamlandı", extractDir);
+      });
 
-        res.on("error", (err) => {
-          console.warn("[İndirme Hatası]:", err.message);
-          startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
-        });
-      }
-    );
+      res.on("error", (err) => {
+        if (session.isPaused) return;
+        console.warn("[İndirme Hatası]:", err.message);
+        startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
+      });
+    });
 
+    session.req = req;
     req.on("error", (err) => {
+      if (session.isPaused) return;
       console.warn("[İstek Hatası]:", err.message);
       startFallbackDownload(gameTitle, appId, tempArchive, extractDir);
     });
@@ -571,8 +662,11 @@ function sendProgress(gameTitle, appId, status, progressPercent, speed, download
 }
 
 function startFallbackDownload(gameTitle, appId, tempArchive, extractDir) {
+  const key = gameTitle.toLowerCase();
+  const session = activeDownloads.get(key) || {};
   let percent = 0;
   const interval = setInterval(() => {
+    if (session.isPaused) return;
     percent += 10;
     const speed = (28 + Math.random() * 6).toFixed(1) + " MB/s";
 
@@ -587,6 +681,7 @@ function startFallbackDownload(gameTitle, appId, tempArchive, extractDir) {
         const dummyExe = path.join(extractDir, `${gameTitle}.exe`);
         fs.writeFileSync(dummyExe, `Glibi Game Package: ${gameTitle}`);
         markGameInstalled(gameTitle, appId, tempArchive, extractDir, dummyExe);
+        activeDownloads.delete(key);
       } catch {}
     }
   }, 250);

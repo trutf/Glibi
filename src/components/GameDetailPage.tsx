@@ -10,12 +10,14 @@ import {
 interface GameDetailPageProps {
   appId: number;
   initialTitle: string;
+  ripUrl?: string;
   onBack: () => void;
 }
 
 export const GameDetailPage: React.FC<GameDetailPageProps> = ({
   appId,
   initialTitle,
+  ripUrl,
   onBack,
 }) => {
   const [data, setData] = useState<SteamGameData | null>(null);
@@ -25,17 +27,15 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
 
   // SteamRIP İndirme Durumu
   const [downloadState, setDownloadState] = useState<{
-    status: "idle" | "fetching_rip" | "downloading" | "completed" | "error";
+    status: "idle" | "fetching_rip" | "downloading" | "paused" | "extracting" | "completed" | "error";
     progressPercent: number;
     speed: string;
     hostName: string;
-    ripUrl: string;
   }>({
     status: "idle",
     progressPercent: 0,
     speed: "",
     hostName: "",
-    ripUrl: "",
   });
 
   useEffect(() => {
@@ -117,6 +117,7 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
       gameTitle: gameName,
       appId: appId,
       directUrl: "",
+      ripUrl: ripUrl || "",
       host: "SteamRIP",
     });
   };
@@ -172,7 +173,7 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
                   </div>
                 )}
 
-                {downloadState.status === "downloading" && (
+                {(downloadState.status === "downloading" || downloadState.status === "paused" || downloadState.status === "extracting") && (
                   <div className="download-active-panel">
                     <div className="download-progress-track">
                       <div
@@ -181,8 +182,42 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
                       />
                     </div>
                     <div className="download-meta-text">
-                      <span>%{downloadState.progressPercent} ({downloadState.hostName})</span>
+                      <span className="progress-percent">
+                        %{downloadState.progressPercent} {downloadState.status === "extracting" ? "· Arşiv Açılıyor" : ""}
+                      </span>
                       <span className="download-speed-num">{downloadState.speed}</span>
+                      
+                      {/* Kontrol Butonları: Duraklat, Devam Et, İptal Et */}
+                      <div className="download-ctrl-btns">
+                        {downloadState.status === "downloading" && (
+                          <button
+                            className="ctrl-icon-btn"
+                            onClick={() => (window.electronAPI as any)?.pauseDownload?.(data?.name || initialTitle)}
+                            title="Duraklat"
+                          >
+                            ❚❚
+                          </button>
+                        )}
+                        {downloadState.status === "paused" && (
+                          <button
+                            className="ctrl-icon-btn"
+                            onClick={() => (window.electronAPI as any)?.resumeDownload?.(data?.name || initialTitle)}
+                            title="Devam Et"
+                          >
+                            ▶
+                          </button>
+                        )}
+                        <button
+                          className="ctrl-icon-btn cancel"
+                          onClick={() => {
+                            (window.electronAPI as any)?.cancelDownload?.(data?.name || initialTitle);
+                            setDownloadState({ status: "idle", progressPercent: 0, speed: "", hostName: "" });
+                          }}
+                          title="İptal Et"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

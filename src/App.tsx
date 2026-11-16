@@ -34,7 +34,10 @@ declare global {
       close: () => void;
       minimize: () => void;
       maximize: () => void;
-      startDownload: (options: { gameTitle: string; appId?: number; directUrl: string; host: string }) => void;
+      startDownload: (options: { gameTitle: string; appId?: number; directUrl: string; ripUrl?: string; host: string }) => void;
+      pauseDownload: (gameTitle: string) => void;
+      resumeDownload: (gameTitle: string) => void;
+      cancelDownload: (gameTitle: string) => void;
       onDownloadProgress: (callback: (data: any) => void) => void;
       getInstalledGames: () => Promise<InstalledGame[]>;
       openGameFolder: (folderPath: string) => void;
@@ -87,7 +90,7 @@ const featuredCategories = [
 
 interface GameCardProps {
   game: CatalogGame;
-  onOpenDetail: (appId: number, title: string) => void;
+  onOpenDetail: (appId: number, title: string, ripUrl?: string) => void;
   failedImgs: Record<string, boolean>;
   onImgError: (id: string) => void;
 }
@@ -131,7 +134,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
     <div
       ref={cardRef}
       className="game-card"
-      onClick={() => onOpenDetail(game.appId, game.title)}
+      onClick={() => onOpenDetail(game.appId, game.title, game.ripUrl)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -211,7 +214,7 @@ export const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   // 📄 Oyun Detay Sayfası
-  const [detailGame, setDetailGame] = useState<{ appId: number; title: string } | null>(null);
+  const [detailGame, setDetailGame] = useState<{ appId: number; title: string; ripUrl?: string } | null>(null);
 
   // 🔍 Alt Arama Durumu
   const [searchQuery, setSearchQuery] = useState("");
@@ -283,8 +286,8 @@ export const App: React.FC = () => {
     setFailedImgs((prev) => ({ ...prev, [gameId]: true }));
   };
 
-  const handleOpenDetail = (appId: number, title: string) => {
-    setDetailGame({ appId, title });
+  const handleOpenDetail = (appId: number, title: string, ripUrl?: string) => {
+    setDetailGame({ appId, title, ripUrl });
   };
 
   const handleBackToGallery = () => {
@@ -405,6 +408,7 @@ export const App: React.FC = () => {
         <GameDetailPage
           appId={detailGame.appId}
           initialTitle={detailGame.title}
+          ripUrl={detailGame.ripUrl}
           onBack={handleBackToGallery}
         />
       ) : (
