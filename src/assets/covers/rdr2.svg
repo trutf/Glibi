@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <!-- Rich dynamic gradients -->
+    <linearGradient id="bg_rdr2" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#2b0a0a" />
+      <stop offset="45%" stop-color="#120505" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+
+    <radialGradient id="vignette_rdr2" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#e03131" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#000000" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+
+    <linearGradient id="overlay_rdr2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="65%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.96" />
+    </linearGradient>
+
+    <!-- Subtle Grain / Stripe pattern for AAA poster texture -->
+    <pattern id="lines_rdr2" width="100" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="100" y2="0" stroke="#ffffff" stroke-opacity="0.018" stroke-width="2" />
+    </pattern>
+  </defs>
+
+  <!-- Layers -->
+  <rect width="600" height="900" fill="url(#bg_rdr2)" />
+  <rect width="600" height="900" fill="url(#vignette_rdr2)" />
+  <rect width="600" height="900" fill="url(#lines_rdr2)" />
+
+  <!-- Outer cinematic borders -->
+  <rect x="18" y="18" width="564" height="864" fill="none" stroke="#e03131" stroke-opacity="0.22" stroke-width="1.5" />
+  <rect x="24" y="24" width="552" height="852" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1" />
+
+  <!-- Top Header bar -->
+  <g transform="translate(42, 58)">
+    <circle cx="6" cy="6" r="4" fill="#e03131" />
+    <text x="20" y="10" fill="#e03131" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="3">OPEN WORLD ACTION</text>
+    <text x="516" y="10" text-anchor="end" fill="#777777" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="1.5">ROCKSTAR</text>
+  </g>
+
+  <!-- Central Artwork Motif -->
+  
+        <!-- Sun, Birds & Western Silhouette -->
+        <circle cx="300" cy="360" r="140" fill="#e03131" fill-opacity="0.75" />
+        <path d="M 100 520 L 220 460 L 320 490 L 410 440 L 500 520 Z" fill="#0c0303" />
+        <path d="M 80 550 L 250 490 L 400 540 L 520 480 L 540 550 Z" fill="#000000" />
+        <!-- Flying birds in horizon -->
+        <path d="M 220 280 Q 235 270 250 280 Q 265 270 280 280 Q 265 285 250 282 Z" fill="#ffffff" fill-opacity="0.8" />
+        <path d="M 320 250 Q 330 242 340 250 Q 350 242 360 250 Q 350 254 340 252 Z" fill="#ffffff" fill-opacity="0.7" />
+        <path d="M 370 290 Q 380 283 390 290 Q 400 283 410 290 Q 400 293 390 291 Z" fill="#ffffff" fill-opacity="0.6" />
+        
+
+  <!-- Lighting & Shadow Overlays -->
+  <rect width="600" height="900" fill="url(#overlay_rdr2)" />
+
+  <!-- Atmospheric quote/lore tag -->
+  <text x="300" y="640" text-anchor="middle" fill="#aaaaaa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4">OUTLAWS FOR LIFE</text>
+
+  <!-- Bottom Hero Typography (Steam/GOG Master Art Style) -->
+  <g transform="translate(42, 730)">
+    <!-- Decorative glow bar -->
+    <rect x="0" y="-35" width="46" height="3" fill="#e03131" rx="1.5" />
+    
+    <!-- Main Title -->
+    <text x="0" y="10" fill="#ffffff" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="38" font-weight="900" letter-spacing="1">RED DEAD</text>
+    
+    <!-- Subtitle -->
+    <text x="2" y="44" fill="#f8f9fa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="3">REDEMPTION II</text>
+    
+    <!-- Status / Ready Pill -->
+    <g transform="translate(0, 75)">
+      <rect x="0" y="0" width="86" height="22" rx="3" fill="#e03131" fill-opacity="0.2" stroke="#e03131" stroke-opacity="0.6" stroke-width="1" />
+      <text x="43" y="15" text-anchor="middle" fill="#f8f9fa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="9" font-weight="bold" letter-spacing="1.5">READY</text>
+    </g>
+  </g>
+</svg>

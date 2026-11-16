@@ -1,0 +1,1238 @@
+/* Strict Pure #161718 Jet Black Minimalist Theme */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+html, body, #root {
+  width: 100vw;
+  height: 100vh;
+  background-color: #161718;
+  color: #ffffff;
+  font-family: "Open Sans", "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+
+/* Launcher Window */
+.launcher-window {
+  width: 100vw;
+  height: 100vh;
+  background-color: #161718;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Window Region - drag area & window controls */
+.window-drag-region {
+  height: 36px;
+  min-height: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-app-region: drag;
+  background-color: #161718;
+}
+
+.topbar-left {
+  width: 132px;
+}
+
+/* Centered Navigation Tabs */
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  -webkit-app-region: no-drag;
+}
+
+.nav-tab-btn {
+  background: transparent;
+  color: #6d7072;
+  font-family: "Open Sans", "Fira Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav-tab-btn:hover {
+  color: #c0c3c5;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.nav-tab-btn.active {
+  color: #ffffff;
+}
+
+/* Window controls on the right */
+.window-controls {
+  display: flex;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.control-btn {
+  width: 44px;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.control-btn:hover {
+  background-color: #242627;
+}
+
+.control-btn:hover svg rect,
+.control-btn:hover svg path {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+.control-btn.close:hover {
+  background-color: #e81123;
+}
+
+.control-btn.close:hover svg path {
+  stroke: #ffffff;
+}
+
+/* Store View Wrapper */
+.store-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 18px 20px;
+  gap: 10px;
+}
+
+/* 4 Parçalı Genişleyen Vitrin Kartı (Showcase Card) */
+.showcase-card {
+  height: 140px;
+  min-height: 140px;
+  display: flex;
+  gap: 6px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.showcase-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #111213;
+  transition: flex 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.showcase-panel:hover {
+  flex: 2.4;
+}
+
+.showcase-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  filter: brightness(0.68) contrast(1.05);
+  transition: filter 0.3s ease, transform 0.35s ease;
+}
+
+.showcase-panel:hover .showcase-bg-img {
+  filter: brightness(0.88) contrast(1.1);
+  transform: scale(1.03);
+}
+
+.showcase-bg-img.rolling-shuffle {
+  filter: brightness(1.1) blur(2px) contrast(1.1);
+  transform: scale(1.05);
+}
+
+.showcase-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 11, 12, 0.95) 0%, rgba(10, 11, 12, 0.4) 60%, transparent 100%);
+  pointer-events: none;
+}
+
+.showcase-content {
+  position: absolute;
+  inset: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.showcase-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.showcase-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #c5c9cc;
+  background-color: rgba(22, 23, 24, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+.dice-icon-btn {
+  pointer-events: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #c0c4c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dice-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: rotate(18deg) scale(1.08);
+}
+
+.dice-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.dice-icon-btn.active-roll {
+  animation: rollTumble 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes rollTumble {
+  0% { transform: rotate(0deg) scale(1); }
+  40% { transform: rotate(220deg) scale(1.2); }
+  80% { transform: rotate(380deg) scale(0.95); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.showcase-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.showcase-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.showcase-sub {
+  font-size: 10px;
+  color: #8f9396;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Games Gallery Grid - Strictly Equal Columns */
+.games-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 16px 54px;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  column-gap: 8px;
+  row-gap: 8px;
+  align-content: start;
+}
+
+.store-container .games-container.store-grid {
+  padding: 0;
+}
+
+.games-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.games-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.games-container::-webkit-scrollbar-thumb {
+  background: #252729;
+  border-radius: 2px;
+}
+
+/* Minimalist Game Card */
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: transparent;
+  perspective: 700px;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+/* Poster Artwork Container with 3D Tilt - Enforced 2:3 ratio */
+.poster-container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 2 / 3;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #0d0e0e;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+  flex-shrink: 0;
+}
+
+.poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* Subtle mouse specular reflection / light glare */
+.card-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  transition: opacity 0.2s ease;
+}
+
+/* Title Slot directly below the poster artwork */
+.title-slot {
+  height: 20px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  background: transparent;
+  z-index: 1;
+}
+
+.game-title {
+  font-family: "Open Sans", "Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #9da0a2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease-out;
+}
+
+.game-card:hover .game-title {
+  opacity: 1;
+  transform: translateY(0);
+  color: #ffffff;
+}
+
+/* 🌊 Sıvı / Yağ Gibi Eriyen Organik Alt Arama (Kutusuz, Fade'li & Blurlu) */
+/* 🌊 Minimalist, Şeffaf ve Sıvı Alt Dock */
+.bottom-dock-zone {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(22, 23, 24, 0.92) 0%, rgba(22, 23, 24, 0.45) 60%, transparent 100%);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to top, black 65%, transparent 100%);
+  mask-image: linear-gradient(to top, black 65%, transparent 100%);
+}
+
+.bottom-dock-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Ultra Kompakt Şeffaf Sayfalama (Göz yormayan, minimalist sayfa göstergesi) */
+.bottom-pagination-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 3px 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.compact-nav-arrow {
+  background: transparent;
+  border: none;
+  color: #7b8186;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.compact-nav-arrow:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+.compact-nav-arrow:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.compact-page-indicator {
+  font-size: 11px;
+  font-weight: 600;
+  color: #c0c4c7;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  padding: 0 2px;
+}
+
+.compact-page-divider {
+  color: #4a4d50;
+  font-weight: 400;
+}
+
+.bottom-search-flow {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 10px;
+  cursor: text;
+  width: auto;
+  max-width: 420px;
+}
+
+.search-lens-icon {
+  color: #55585a;
+  flex-shrink: 0;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.bottom-search-flow:hover .search-lens-icon,
+.bottom-search-flow:focus-within .search-lens-icon {
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.bottom-search-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: "Open Sans", "Fira Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  width: 140px;
+  text-align: center;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+}
+
+.bottom-search-input:focus,
+.bottom-search-flow:hover .bottom-search-input,
+.bottom-search-flow.has-query .bottom-search-input {
+  width: 280px;
+  text-align: left;
+}
+
+.bottom-search-input::placeholder {
+  color: #444749;
+  transition: color 0.2s ease;
+}
+
+.bottom-search-flow:hover .bottom-search-input::placeholder,
+.bottom-search-flow:focus-within .bottom-search-input::placeholder {
+  color: #6d7174;
+}
+
+.clear-search-btn {
+  background: transparent;
+  color: #55585a;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 0.15s ease;
+}
+
+.clear-search-btn:hover {
+  color: #ffffff;
+}
+
+.no-results-msg {
+  grid-column: 1 / -1;
+  padding: 40px 0;
+  text-align: center;
+  color: #5a5d60;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ========================================================
+   🚀 FULL GAME DETAIL PAGE (SADE, DİNGİN, GÖZ YORMAYAN)
+   ======================================================== */
+.game-detail-viewport {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #161718;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeInPage 0.2s ease-out;
+}
+
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-top-nav {
+  height: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #161718;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: #8c9092;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.back-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.detail-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e0e3e5;
+  letter-spacing: 0.4px;
+}
+
+.detail-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 28px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-scroll-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.detail-scroll-content::-webkit-scrollbar-thumb {
+  background: #252729;
+  border-radius: 2px;
+}
+
+/* Üst Başlık & Saf Tipografi */
+.detail-header-pure {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.detail-pure-left {
+  width: 135px;
+  min-width: 135px;
+}
+
+.detail-poster-box {
+  width: 100%;
+  aspect-ratio: 600 / 900;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  background-color: #0d0e0e;
+}
+
+.detail-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-pure-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-game-h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.detail-genres-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.detail-genre-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #8c9092;
+}
+
+.detail-free-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.detail-short-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9da0a3;
+  margin-top: 2px;
+}
+
+/* Sade, Dingin İstatistik Sırası (Göz yormayan ince metinler) */
+.detail-pure-stats-row {
+  display: flex;
+  gap: 22px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
+}
+
+.pure-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pure-stat-label {
+  font-size: 10px;
+  color: #55585b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pure-stat-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c5c9cc;
+}
+
+/* Medya Alanı */
+.detail-media-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.media-stage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 400px;
+  background-color: #0a0b0b;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.stage-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.stage-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-thumbs-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.media-thumbs-row::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.media-thumb-item {
+  position: relative;
+  width: 100px;
+  min-width: 100px;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+  opacity: 0.55;
+}
+
+.media-thumb-item:hover,
+.media-thumb-item.active {
+  opacity: 1;
+  border-color: #ffffff;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.play-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  font-size: 11px;
+}
+
+/* Detay Gövdesi */
+.detail-pure-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.pure-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6a6e71;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+/* 📖 Açılır Kapanır Oyun Hakkında Kartı */
+.expandable-desc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #121314;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+  padding: 14px 18px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.expandable-desc-card:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.expandable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.expand-toggle-btn {
+  background: transparent;
+  color: #6a6e71;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.expandable-header:hover .expand-toggle-btn {
+  color: #ffffff;
+}
+
+.arrow-icon {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+.expandable-content {
+  position: relative;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.expandable-content.collapsed {
+  max-height: 100px;
+}
+
+.expandable-content.expanded {
+  max-height: 2500px;
+}
+
+.expandable-fade-mask {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(to top, #121314 15%, transparent 100%);
+  pointer-events: none;
+}
+
+.detailed-desc-html {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #9da0a3;
+}
+
+.detailed-desc-html p {
+  margin-bottom: 6px;
+}
+
+.detailed-desc-html h2,
+.detailed-desc-html h1 {
+  font-size: 13px;
+  color: #e0e3e5;
+  margin: 10px 0 4px;
+}
+
+.detailed-desc-html img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 6px 0;
+}
+
+/* Sistem Gereksinimleri */
+.sys-req-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sys-req-block {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #7d8184;
+}
+
+.sys-req-block strong {
+  color: #b5b9bc;
+}
+
+.sys-req-block ul {
+  padding-left: 14px;
+}
+
+/* Etiketler */
+.tags-cloud {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.community-tag {
+  font-size: 10px;
+  color: #8c9092;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Kullanıcı Yorumları */
+.user-reviews-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pure-review-card {
+  background-color: #121314;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.review-meta-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-thumb-icon {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.review-thumb-icon.up {
+  color: #4ade80;
+}
+
+.review-thumb-icon.down {
+  color: #f87171;
+}
+
+.review-hours {
+  font-size: 10px;
+  color: #55585b;
+  font-family: monospace;
+}
+
+.review-snippet {
+  font-size: 11px;
+  color: #9da0a3;
+  line-height: 1.4;
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-date {
+  font-size: 9px;
+  color: #444749;
+}
+
+/* Settings placeholder */
+.settings-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-card {
+  text-align: center;
+}
+
+.settings-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.settings-desc {
+  font-size: 12px;
+  color: #666666;
+}
+
+/* ⚡ Tek Tıkla Yükleme & SteamRIP İndirme Butonu / Barı */
+.detail-title-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.download-action-group {
+  display: flex;
+  align-items: center;
+}
+
+.pure-install-btn {
+  background-color: #ffffff;
+  color: #121314;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+}
+
+.pure-install-btn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.pure-install-btn.installed {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  cursor: default;
+  box-shadow: none;
+}
+
+.download-resolving-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #c5c9cc;
+  font-weight: 600;
+}
+
+.spinner-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  animation: pulseDot 1s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.download-active-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 180px;
+}
+
+.download-progress-track {
+  width: 100%;
+  height: 5px;
+  background-color: #242628;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.download-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.download-meta-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #8c9092;
+  font-family: monospace;
+}
+
+.download-speed-num {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+
+/* 🎮 Gerçekçi & Şık Kütüphane (Library) Boş / Dolu Tasarımı */
+.library-view-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 18px 20px;
+}
+
+.library-card-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.library-card-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.lib-action-btn {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a0a4a7;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.lib-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.lib-action-btn.delete {
+  flex: 0 0 24px;
+  color: #ef4444;
+}
+
+.lib-action-btn.delete:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.empty-library-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-library-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.empty-library-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.empty-library-desc {
+  font-size: 13px;
+  color: #7d8184;
+  max-width: 420px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.browse-store-btn {
+  background-color: #ffffff;
+  color: #121314;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.12);
+}
+
+.browse-store-btn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}

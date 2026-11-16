@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <!-- Rich dynamic gradients -->
+    <linearGradient id="bg_minecraft" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#0d2616" />
+      <stop offset="45%" stop-color="#07160c" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+
+    <radialGradient id="vignette_minecraft" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#51cf66" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#000000" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+
+    <linearGradient id="overlay_minecraft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="65%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.96" />
+    </linearGradient>
+
+    <!-- Subtle Grain / Stripe pattern for AAA poster texture -->
+    <pattern id="lines_minecraft" width="100" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="100" y2="0" stroke="#ffffff" stroke-opacity="0.018" stroke-width="2" />
+    </pattern>
+  </defs>
+
+  <!-- Layers -->
+  <rect width="600" height="900" fill="url(#bg_minecraft)" />
+  <rect width="600" height="900" fill="url(#vignette_minecraft)" />
+  <rect width="600" height="900" fill="url(#lines_minecraft)" />
+
+  <!-- Outer cinematic borders -->
+  <rect x="18" y="18" width="564" height="864" fill="none" stroke="#51cf66" stroke-opacity="0.22" stroke-width="1.5" />
+  <rect x="24" y="24" width="552" height="852" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1" />
+
+  <!-- Top Header bar -->
+  <g transform="translate(42, 58)">
+    <circle cx="6" cy="6" r="4" fill="#51cf66" />
+    <text x="20" y="10" fill="#51cf66" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="3">SANDBOX SURVIVAL</text>
+    <text x="516" y="10" text-anchor="end" fill="#777777" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="1.5">MOJANG</text>
+  </g>
+
+  <!-- Central Artwork Motif -->
+  
+        <!-- Isometric 3D Cube / Dirt Grass Block -->
+        <g transform="translate(300, 370)">
+          <!-- Top face -->
+          <polygon points="0,-120 120,-50 0,20 -120,-50" fill="#94d82d" />
+          <!-- Left face -->
+          <polygon points="-120,-50 0,20 0,160 -120,90" fill="#402d1a" />
+          <!-- Right face -->
+          <polygon points="0,20 120,-50 120,90 0,160" fill="#2d1f12" />
+          <!-- Grass overhang details -->
+          <polygon points="-120,-50 0,20 0,45 -30,30 -40,55 -70,35 -90,50 -120,25" fill="#51cf66" />
+          <polygon points="0,20 120,-50 120,-25 90,0 75,-15 50,15 25,-5 0,45" fill="#51cf66" fill-opacity="0.9" />
+        </g>
+        
+
+  <!-- Lighting & Shadow Overlays -->
+  <rect width="600" height="900" fill="url(#overlay_minecraft)" />
+
+  <!-- Atmospheric quote/lore tag -->
+  <text x="300" y="640" text-anchor="middle" fill="#aaaaaa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4">CREATE & EXPLORE</text>
+
+  <!-- Bottom Hero Typography (Steam/GOG Master Art Style) -->
+  <g transform="translate(42, 730)">
+    <!-- Decorative glow bar -->
+    <rect x="0" y="-35" width="46" height="3" fill="#51cf66" rx="1.5" />
+    
+    <!-- Main Title -->
+    <text x="0" y="10" fill="#ffffff" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="38" font-weight="900" letter-spacing="1">MINECRAFT</text>
+    
+    <!-- Subtitle -->
+    <text x="2" y="44" fill="#94d82d" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="3">JAVA & BEDROCK</text>
+    
+    <!-- Status / Ready Pill -->
+    <g transform="translate(0, 75)">
+      <rect x="0" y="0" width="86" height="22" rx="3" fill="#51cf66" fill-opacity="0.2" stroke="#51cf66" stroke-opacity="0.6" stroke-width="1" />
+      <text x="43" y="15" text-anchor="middle" fill="#94d82d" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="9" font-weight="bold" letter-spacing="1.5">READY</text>
+    </g>
+  </g>
+</svg>

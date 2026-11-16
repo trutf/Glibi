@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <!-- Rich dynamic gradients -->
+    <linearGradient id="bg_eldenring" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#1a1207" />
+      <stop offset="45%" stop-color="#0c0a06" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+
+    <radialGradient id="vignette_eldenring" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#000000" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+
+    <linearGradient id="overlay_eldenring" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="65%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.96" />
+    </linearGradient>
+
+    <!-- Subtle Grain / Stripe pattern for AAA poster texture -->
+    <pattern id="lines_eldenring" width="100" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="100" y2="0" stroke="#ffffff" stroke-opacity="0.018" stroke-width="2" />
+    </pattern>
+  </defs>
+
+  <!-- Layers -->
+  <rect width="600" height="900" fill="url(#bg_eldenring)" />
+  <rect width="600" height="900" fill="url(#vignette_eldenring)" />
+  <rect width="600" height="900" fill="url(#lines_eldenring)" />
+
+  <!-- Outer cinematic borders -->
+  <rect x="18" y="18" width="564" height="864" fill="none" stroke="#d4af37" stroke-opacity="0.22" stroke-width="1.5" />
+  <rect x="24" y="24" width="552" height="852" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1" />
+
+  <!-- Top Header bar -->
+  <g transform="translate(42, 58)">
+    <circle cx="6" cy="6" r="4" fill="#d4af37" />
+    <text x="20" y="10" fill="#d4af37" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="3">ACTION RPG</text>
+    <text x="516" y="10" text-anchor="end" fill="#777777" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="1.5">GOTY 2022</text>
+  </g>
+
+  <!-- Central Artwork Motif -->
+  
+        <!-- Elden Ring Great Rune Circles -->
+        <circle cx="300" cy="350" r="150" fill="none" stroke="#d4af37" stroke-width="3" stroke-opacity="0.7" />
+        <circle cx="300" cy="270" r="110" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-opacity="0.5" />
+        <circle cx="210" cy="420" r="110" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-opacity="0.5" />
+        <circle cx="390" cy="420" r="110" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-opacity="0.5" />
+        <line x1="300" y1="120" x2="300" y2="580" stroke="#d4af37" stroke-width="4" stroke-opacity="0.9" />
+        <path d="M 160 320 Q 300 240 440 320" fill="none" stroke="#f3e5ab" stroke-width="3" stroke-opacity="0.8" />
+        <path d="M 120 450 Q 300 560 480 450" fill="none" stroke="#f3e5ab" stroke-width="3" stroke-opacity="0.8" />
+        
+
+  <!-- Lighting & Shadow Overlays -->
+  <rect width="600" height="900" fill="url(#overlay_eldenring)" />
+
+  <!-- Atmospheric quote/lore tag -->
+  <text x="300" y="640" text-anchor="middle" fill="#aaaaaa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4">RISE, TARNISHED</text>
+
+  <!-- Bottom Hero Typography (Steam/GOG Master Art Style) -->
+  <g transform="translate(42, 730)">
+    <!-- Decorative glow bar -->
+    <rect x="0" y="-35" width="46" height="3" fill="#d4af37" rx="1.5" />
+    
+    <!-- Main Title -->
+    <text x="0" y="10" fill="#ffffff" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="38" font-weight="900" letter-spacing="1">ELDEN RING</text>
+    
+    <!-- Subtitle -->
+    <text x="2" y="44" fill="#f3e5ab" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="3">SHADOW OF THE ERDTREE</text>
+    
+    <!-- Status / Ready Pill -->
+    <g transform="translate(0, 75)">
+      <rect x="0" y="0" width="86" height="22" rx="3" fill="#d4af37" fill-opacity="0.2" stroke="#d4af37" stroke-opacity="0.6" stroke-width="1" />
+      <text x="43" y="15" text-anchor="middle" fill="#f3e5ab" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="9" font-weight="bold" letter-spacing="1.5">INSTALLED</text>
+    </g>
+  </g>
+</svg>

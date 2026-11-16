@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <!-- Rich dynamic gradients -->
+    <linearGradient id="bg_baldursgate3" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#210f34" />
+      <stop offset="45%" stop-color="#12081c" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+
+    <radialGradient id="vignette_baldursgate3" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#cc5de8" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#000000" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+
+    <linearGradient id="overlay_baldursgate3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="65%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.96" />
+    </linearGradient>
+
+    <!-- Subtle Grain / Stripe pattern for AAA poster texture -->
+    <pattern id="lines_baldursgate3" width="100" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="100" y2="0" stroke="#ffffff" stroke-opacity="0.018" stroke-width="2" />
+    </pattern>
+  </defs>
+
+  <!-- Layers -->
+  <rect width="600" height="900" fill="url(#bg_baldursgate3)" />
+  <rect width="600" height="900" fill="url(#vignette_baldursgate3)" />
+  <rect width="600" height="900" fill="url(#lines_baldursgate3)" />
+
+  <!-- Outer cinematic borders -->
+  <rect x="18" y="18" width="564" height="864" fill="none" stroke="#cc5de8" stroke-opacity="0.22" stroke-width="1.5" />
+  <rect x="24" y="24" width="552" height="852" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1" />
+
+  <!-- Top Header bar -->
+  <g transform="translate(42, 58)">
+    <circle cx="6" cy="6" r="4" fill="#cc5de8" />
+    <text x="20" y="10" fill="#cc5de8" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="3">TACTICAL RPG</text>
+    <text x="516" y="10" text-anchor="end" fill="#777777" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="11" font-weight="bold" letter-spacing="1.5">GOTY 2023</text>
+  </g>
+
+  <!-- Central Artwork Motif -->
+  
+        <!-- D&D D20 Dice & Mind Flayer Glow -->
+        <g transform="translate(300, 370)">
+          <polygon points="0,-150 130,-75 130,75 0,150 -130,75 -130,-75" fill="none" stroke="#cc5de8" stroke-width="3" stroke-opacity="0.6" />
+          <!-- Internal D20 triangles -->
+          <polygon points="0,-150 0,40 -115,-20" fill="#cc5de8" fill-opacity="0.25" stroke="#f783ac" stroke-width="1.5" />
+          <polygon points="0,-150 0,40 115,-20" fill="#cc5de8" fill-opacity="0.35" stroke="#f783ac" stroke-width="1.5" />
+          <polygon points="0,40 -115,-20 -70,110" fill="#cc5de8" fill-opacity="0.45" stroke="#f783ac" stroke-width="1.5" />
+          <polygon points="0,40 115,-20 70,110" fill="#cc5de8" fill-opacity="0.55" stroke="#f783ac" stroke-width="1.5" />
+          <polygon points="0,40 -70,110 70,110" fill="#f783ac" fill-opacity="0.8" stroke="#f783ac" stroke-width="1.5" />
+          <circle cx="0" cy="40" r="14" fill="#ffffff" />
+        </g>
+        
+
+  <!-- Lighting & Shadow Overlays -->
+  <rect width="600" height="900" fill="url(#overlay_baldursgate3)" />
+
+  <!-- Atmospheric quote/lore tag -->
+  <text x="300" y="640" text-anchor="middle" fill="#aaaaaa" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="4">GATHER YOUR PARTY</text>
+
+  <!-- Bottom Hero Typography (Steam/GOG Master Art Style) -->
+  <g transform="translate(42, 730)">
+    <!-- Decorative glow bar -->
+    <rect x="0" y="-35" width="46" height="3" fill="#cc5de8" rx="1.5" />
+    
+    <!-- Main Title -->
+    <text x="0" y="10" fill="#ffffff" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="38" font-weight="900" letter-spacing="1">BALDUR'S GATE</text>
+    
+    <!-- Subtitle -->
+    <text x="2" y="44" fill="#f783ac" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="14" font-weight="700" letter-spacing="3">III</text>
+    
+    <!-- Status / Ready Pill -->
+    <g transform="translate(0, 75)">
+      <rect x="0" y="0" width="86" height="22" rx="3" fill="#cc5de8" fill-opacity="0.2" stroke="#cc5de8" stroke-opacity="0.6" stroke-width="1" />
+      <text x="43" y="15" text-anchor="middle" fill="#f783ac" font-family="DejaVu Sans, -apple-system, sans-serif" font-size="9" font-weight="bold" letter-spacing="1.5">INSTALLED</text>
+    </g>
+  </g>
+</svg>

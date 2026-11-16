@@ -1,0 +1,12 @@
+{
+  "name": "glibi-launcher",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "build": "bun build src/index.tsx --outfile=src/bundle.js",
+    "start": "bun run build && electron . 2>/dev/null"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}
