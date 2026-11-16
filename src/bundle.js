@@ -19155,33 +19155,23 @@ var GameDetailPage = ({
                             children: [
                               /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
                                 className: "pure-install-btn",
-                                style: { backgroundColor: "#22c55e", color: "#ffffff" },
                                 onClick: () => {
                                   const title = data?.name || initialTitle;
-                                  window.electronAPI?.launchGame?.(title);
+                                  window.electronAPI?.launchGame?.(title).then((res) => {
+                                    if (res && !res.success) {
+                                      alert(`Başlatılamadı: ${res.error}`);
+                                    }
+                                  });
                                 },
-                                title: "Oyunu Wine ile Başlat",
-                                children: [
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
-                                    width: "14",
-                                    height: "14",
-                                    viewBox: "0 0 24 24",
-                                    fill: "currentColor",
-                                    children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("polygon", {
-                                      points: "5 3 19 12 5 21 5 3"
-                                    }, undefined, false, undefined, this)
-                                  }, undefined, false, undefined, this),
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                    children: "Oyunu Başlat"
-                                  }, undefined, false, undefined, this)
-                                ]
-                              }, undefined, true, undefined, this),
+                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                  children: "Oyunu Başlat"
+                                }, undefined, false, undefined, this)
+                              }, undefined, false, undefined, this),
                               /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
                                 className: "pure-install-btn installed",
                                 onClick: () => window.electronAPI?.openGameFolder(""),
-                                title: "İndirilen Dosya Konumu",
                                 children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                  children: "Klasörü Aç"
+                                  children: "Dosya Konumu"
                                 }, undefined, false, undefined, this)
                               }, undefined, false, undefined, this)
                             ]
@@ -19697,7 +19687,7 @@ var GameCard = ({ game, onOpenDetail, failedImgs, onImgError }) => {
   }, undefined, true, undefined, this);
 };
 var App = () => {
-  const [activeTab, setActiveTab] = import_react2.useState("Store");
+  const [activeTab, setActiveTab] = import_react2.useState("Mağaza");
   const [storeGames, setStoreGames] = import_react2.useState(DEFAULT_POPULAR_GAMES);
   const [failedImgs, setFailedImgs] = import_react2.useState({});
   const [installedGames, setInstalledGames] = import_react2.useState([]);
@@ -19706,6 +19696,7 @@ var App = () => {
   const [selectedWine, setSelectedWine] = import_react2.useState("wine");
   const [customWineInput, setCustomWineInput] = import_react2.useState("");
   const [launchMessage, setLaunchMessage] = import_react2.useState("");
+  const [isSelectOpen, setIsSelectOpen] = import_react2.useState(false);
   const refreshInstalledGames = () => {
     if (window.electronAPI?.getInstalledGames) {
       window.electronAPI.getInstalledGames().then((list) => {
@@ -19726,7 +19717,10 @@ var App = () => {
           setSelectedWine(s.winePath);
       });
     }
-    const closeContext = () => setContextMenu((prev) => ({ ...prev, visible: false }));
+    const closeContext = () => {
+      setContextMenu((prev) => ({ ...prev, visible: false }));
+      setIsSelectOpen(false);
+    };
     window.addEventListener("click", closeContext);
     return () => window.removeEventListener("click", closeContext);
   }, [activeTab]);
@@ -19811,7 +19805,7 @@ var App = () => {
           }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
             className: "topbar-nav",
-            children: ["Library", "Store", "Settings"].map((tab) => /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
+            children: ["Kütüphane", "Mağaza", "Ayarlar"].map((tab) => /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
               className: `nav-tab-btn ${activeTab === tab ? "active" : ""}`,
               onClick: () => {
                 setActiveTab(tab);
@@ -19880,41 +19874,27 @@ var App = () => {
         ]
       }, undefined, true, undefined, this),
       contextMenu.visible && contextMenu.game && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-        className: "custom-context-menu",
+        className: "context-menu-pure",
         style: { top: contextMenu.y, left: contextMenu.x },
         onClick: (e) => e.stopPropagation(),
         children: [
-          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-            className: "context-menu-title",
-            children: contextMenu.game.gameTitle
-          }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
-            className: "context-menu-item play",
+            className: "context-item-pure primary",
             onClick: () => {
               const game = contextMenu.game;
               setContextMenu({ ...contextMenu, visible: false });
               if (game && window.electronAPI?.launchGame) {
-                setLaunchMessage(`${game.gameTitle} Wine ile başlatılıyor...`);
                 window.electronAPI.launchGame(game.gameTitle).then((res) => {
                   if (!res.success) {
-                    alert(`Başlatma Hatası: ${res.error}`);
+                    alert(`Başlatılamadı: ${res.error}`);
                   }
-                  setTimeout(() => setLaunchMessage(""), 3500);
                 });
               }
             },
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                className: "context-icon",
-                children: "▶"
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                children: "Wine ile Oyna"
-              }, undefined, false, undefined, this)
-            ]
-          }, undefined, true, undefined, this),
+            children: "Oyunu Başlat"
+          }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
-            className: "context-menu-item",
+            className: "context-item-pure",
             onClick: () => {
               const game = contextMenu.game;
               setContextMenu({ ...contextMenu, visible: false });
@@ -19922,40 +19902,22 @@ var App = () => {
                 window.electronAPI?.openGameFolder(game.extractDir || game.downloadPath);
               }
             },
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                className: "context-icon",
-                children: "\uD83D\uDCC1"
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                children: "Klasörü Aç"
-              }, undefined, false, undefined, this)
-            ]
-          }, undefined, true, undefined, this),
+            children: "Dosya Konumu"
+          }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-            className: "context-menu-divider"
+            className: "context-separator-pure"
           }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
-            className: "context-menu-item delete",
+            className: "context-item-pure danger",
             onClick: () => {
               const game = contextMenu.game;
               setContextMenu({ ...contextMenu, visible: false });
               if (game && window.electronAPI?.uninstallGame) {
-                if (confirm(`"${game.gameTitle}" oyununu kütüphaneden ve diskten kaldırmak istiyor musun?`)) {
-                  window.electronAPI.uninstallGame(game.gameTitle).then(setInstalledGames);
-                }
+                window.electronAPI.uninstallGame(game.gameTitle).then(setInstalledGames);
               }
             },
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                className: "context-icon",
-                children: "\uD83D\uDDD1️"
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                children: "Oyunu Kaldır"
-              }, undefined, false, undefined, this)
-            ]
-          }, undefined, true, undefined, this)
+            children: "Kaldır"
+          }, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this),
       launchMessage && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
@@ -19975,7 +19937,7 @@ var App = () => {
         onBack: handleBackToGallery
       }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime2.jsxDEV(jsx_dev_runtime2.Fragment, {
         children: [
-          activeTab === "Library" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+          activeTab === "Kütüphane" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
             className: "library-view-container",
             children: installedGames.length > 0 ? /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
               className: "games-container store-grid",
@@ -20026,7 +19988,7 @@ var App = () => {
                 /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
                   className: "browse-store-btn",
                   onClick: () => {
-                    setActiveTab("Store");
+                    setActiveTab("Mağaza");
                     setCurrentPage(1);
                   },
                   children: "Mağazayı Keşfet"
@@ -20034,7 +19996,7 @@ var App = () => {
               ]
             }, undefined, true, undefined, this)
           }, undefined, false, undefined, this),
-          activeTab === "Store" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+          activeTab === "Mağaza" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
             className: "store-container",
             children: [
               !searchQuery.trim() && currentPage === 1 && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
@@ -20159,108 +20121,123 @@ var App = () => {
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this),
-          activeTab === "Settings" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-            className: "settings-container",
-            children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-              className: "settings-card-box",
-              children: [
-                /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                  className: "settings-section",
-                  children: [
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                      className: "settings-header-icon",
-                      children: "\uD83C\uDF77"
-                    }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("h3", {
-                      className: "settings-title",
-                      children: "Wine & Proton Yapılandırması"
-                    }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("p", {
-                      className: "settings-desc",
-                      children: "Oyunları başlatmak için kullanılan Wine / Proton sürümünü buradan seçebilir veya özel bir Wine binary yolu ekleyebilirsiniz."
-                    }, undefined, false, undefined, this)
-                  ]
-                }, undefined, true, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                  className: "settings-field-group",
-                  children: [
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("label", {
-                      className: "settings-label",
-                      children: "Aktif Wine Sürümü"
-                    }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("select", {
-                      className: "settings-select",
-                      value: selectedWine,
-                      onChange: (e) => {
-                        const newPath = e.target.value;
-                        setSelectedWine(newPath);
-                        window.electronAPI?.saveSettings({ winePath: newPath, customWinePaths: [] });
-                      },
-                      children: availableWine.map((w, idx) => /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("option", {
-                        value: w.path,
-                        children: w.name
-                      }, idx, false, undefined, this))
-                    }, undefined, false, undefined, this)
-                  ]
-                }, undefined, true, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                  className: "settings-field-group",
-                  children: [
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("label", {
-                      className: "settings-label",
-                      children: "Özel Wine Binary Yolu"
-                    }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                      className: "settings-custom-input-row",
-                      children: [
-                        /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("input", {
-                          type: "text",
-                          className: "settings-input",
-                          placeholder: "/usr/bin/wine veya Proton wine yolu...",
-                          value: customWineInput,
-                          onChange: (e) => setCustomWineInput(e.target.value)
-                        }, undefined, false, undefined, this),
-                        /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
-                          className: "settings-save-btn",
+          activeTab === "Ayarlar" && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+            className: "pure-settings-layout",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                className: "pure-settings-header",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
+                    className: "pure-settings-title",
+                    children: "Yapılandırma"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
+                    className: "pure-settings-subtitle",
+                    children: "Wine ve başlatıcı tercihleri"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                className: "pure-settings-group",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("label", {
+                    className: "pure-label",
+                    children: "Wine Sürümü"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                    className: "custom-dropdown-container",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                        className: `custom-dropdown-trigger ${isSelectOpen ? "open" : ""}`,
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          setIsSelectOpen(!isSelectOpen);
+                        },
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
+                            children: availableWine.find((w) => w.path === selectedWine)?.name || selectedWine || "Sistem Wine"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("svg", {
+                            className: `dropdown-arrow ${isSelectOpen ? "open" : ""}`,
+                            width: "10",
+                            height: "6",
+                            viewBox: "0 0 10 6",
+                            fill: "none",
+                            children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("path", {
+                              d: "M1 1L5 5L9 1",
+                              stroke: "currentColor",
+                              strokeWidth: "1.5",
+                              strokeLinecap: "round",
+                              strokeLinejoin: "round"
+                            }, undefined, false, undefined, this)
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      isSelectOpen && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                        className: "custom-dropdown-menu",
+                        onClick: (e) => e.stopPropagation(),
+                        children: availableWine.map((w, idx) => /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                          className: `custom-dropdown-option ${selectedWine === w.path ? "selected" : ""}`,
                           onClick: () => {
-                            if (customWineInput.trim()) {
-                              setSelectedWine(customWineInput.trim());
-                              window.electronAPI?.saveSettings({
-                                winePath: customWineInput.trim(),
-                                customWinePaths: [customWineInput.trim()]
-                              }).then(() => {
-                                window.electronAPI?.getAvailableWine().then(setAvailableWine);
-                              });
-                            }
+                            setSelectedWine(w.path);
+                            setIsSelectOpen(false);
+                            window.electronAPI?.saveSettings({ winePath: w.path, customWinePaths: [] });
                           },
-                          children: "Uygula"
-                        }, undefined, false, undefined, this)
-                      ]
-                    }, undefined, true, undefined, this)
-                  ]
-                }, undefined, true, undefined, this),
-                /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
-                  className: "settings-info-box",
-                  children: [
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                      className: "settings-info-badge",
-                      children: "BİLGİ"
-                    }, undefined, false, undefined, this),
-                    /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
-                      className: "settings-info-text",
-                      children: [
-                        "İndirilen oyunlar arka planda ",
-                        /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("code", {
-                          children: "~/.local/share/Glibi/Games"
-                        }, undefined, false, undefined, this),
-                        " dizinine çıkartılır ve seçilen Wine sürümüyle tek tıkla çalıştırılır."
-                      ]
-                    }, undefined, true, undefined, this)
-                  ]
-                }, undefined, true, undefined, this)
-              ]
-            }, undefined, true, undefined, this)
-          }, undefined, false, undefined, this),
+                          children: [
+                            /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
+                              className: "option-name",
+                              children: w.name
+                            }, undefined, false, undefined, this),
+                            selectedWine === w.path && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {
+                              className: "option-check",
+                              children: "✓"
+                            }, undefined, false, undefined, this)
+                          ]
+                        }, idx, true, undefined, this))
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                className: "pure-settings-group",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("label", {
+                    className: "pure-label",
+                    children: "Özel Wine Yolu"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                    className: "pure-input-row",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("input", {
+                        type: "text",
+                        className: "pure-text-input",
+                        placeholder: "/usr/bin/wine",
+                        value: customWineInput,
+                        onChange: (e) => setCustomWineInput(e.target.value)
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {
+                        className: "pure-action-button",
+                        onClick: () => {
+                          if (customWineInput.trim()) {
+                            const pathVal = customWineInput.trim();
+                            setSelectedWine(pathVal);
+                            window.electronAPI?.saveSettings({
+                              winePath: pathVal,
+                              customWinePaths: [pathVal]
+                            }).then(() => {
+                              window.electronAPI?.getAvailableWine().then(setAvailableWine);
+                            });
+                          }
+                        },
+                        children: "Kaydet"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
             className: "bottom-dock-zone",
             children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
@@ -20309,7 +20286,7 @@ var App = () => {
                     }, undefined, false, undefined, this)
                   ]
                 }, undefined, true, undefined, this),
-                activeTab === "Store" && totalPages > 1 && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
+                activeTab === "Mağaza" && totalPages > 1 && /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
                   className: "bottom-pagination-compact",
                   children: [
                     /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("button", {

@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
-const { spawn, execFile, execSync } = require("child_process");
+const { spawn, execSync } = require("child_process");
 
 // Linux log ve vsync susturma
 app.commandLine.appendSwitch("log-level", "3");
@@ -32,7 +32,6 @@ function getSettingsPath() {
 }
 
 function getGamesInstallDir() {
-  // Arka planda göz önünde olmayan gizli oyun dizini (~/.local/share/Glibi/Games)
   const dir = path.join(app.getPath("home"), ".local", "share", "Glibi", "Games");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -91,24 +90,21 @@ function detectWineVersions() {
     } catch {}
   }
 
-  // Standart sistem wine
   try {
     const sysWine = execSync("which wine 2>/dev/null").toString().trim();
     if (sysWine) addCandidate(sysWine, "Sistem Wine");
   } catch {}
 
-  // Lutris wine koşucuları
   const lutrisDir = path.join(app.getPath("home"), ".local", "share", "lutris", "runners", "wine");
   if (fs.existsSync(lutrisDir)) {
     try {
       const items = fs.readdirSync(lutrisDir);
       for (const item of items) {
-        addCandidate(path.join(lutrisDir, item, "bin", "wine"), `Lutris Wine (${item})`);
+        addCandidate(path.join(lutrisDir, item, "bin", "wine"), `Lutris (${item})`);
       }
     } catch {}
   }
 
-  // Steam Proton uyumluluk araçları
   const steamDirs = [
     path.join(app.getPath("home"), ".local", "share", "Steam", "compatibilitytools.d"),
     path.join(app.getPath("home"), ".steam", "steam", "compatibilitytools.d"),
@@ -126,7 +122,6 @@ function detectWineVersions() {
     }
   }
 
-  // Kullanıcının elle kaydettiği özel wine dizinleri
   const currentSettings = loadSettings();
   if (Array.isArray(currentSettings.customWinePaths)) {
     for (const cp of currentSettings.customWinePaths) {
@@ -135,7 +130,7 @@ function detectWineVersions() {
   }
 
   if (versions.length === 0) {
-    versions.push({ name: "Varsayılan (wine)", path: "wine", version: "" });
+    versions.push({ name: "Sistem Wine", path: "wine", version: "" });
   }
 
   return versions;
@@ -187,11 +182,11 @@ function markGameInstalled(gameTitle, appId, downloadPath, extractDir, exePath) 
 }
 
 function findGameExecutable(dirPath) {
-  if (!fs.existsSync(dirPath)) return null;
+  if (!dirPath || !fs.existsSync(dirPath)) return null;
 
   const foundExes = [];
   function scan(dir, depth = 0) {
-    if (depth > 4) return;
+    if (depth > 5) return;
     try {
       const items = fs.readdirSync(dir);
       for (const item of items) {
@@ -218,67 +213,46 @@ function findGameExecutable(dirPath) {
 
   scan(dirPath);
   if (foundExes.length === 0) return null;
-  // En büyük boyutlu exe genellikle ana oyun çalıştırıcısıdır
   foundExes.sort((a, b) => b.size - a.size);
   return foundExes[0].path;
 }
 
 /**
- * İndirilen Zip / Rar / 7z arşivini ~/.local/share/Glibi/Games/<Oyun> altına çıkar
+ * İndirilen Zip / Rar / 7z arşivini unrar veya unzip ile arka planda çıkar
  */
-function extractGameArchive(archivePath, targetDir, onProgress) {
-  return new Promise((resolve, reject) => {
+function extractGameArchive(archivePath, targetDir) {
+  return new Promise((resolve) => {
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    // 7z var mı kontrol et, yoksa unrar veya unzip dene
-    let tool = "7z";
-    try {
-      execSync("which 7z 2>/dev/null");
-    } catch {
-      tool = archivePath.endsWith(".rar") ? "unrar" : "unzip";
-    }
+    const isRar = archivePath.toLowerCase().endsWith(".rar");
+    let cmd = "";
 
-    let cmdArgs = [];
-    if (tool === "7z") {
-      cmdArgs = ["x", "-y", `-o${targetDir}`, archivePath];
-    } else if (tool === "unrar") {
-      cmdArgs = ["x", "-y", archivePath, targetDir];
+    if (isRar) {
+      cmd = `unrar x -y "${archivePath}" "${targetDir}/" >/dev/null 2>&1`;
     } else {
-      cmdArgs = ["-o", archivePath, "-d", targetDir];
+      cmd = `unzip -o "${archivePath}" -d "${targetDir}/" >/dev/null 2>&1`;
     }
 
-    console.log(`[Arşiv Çıkarılıyor]: ${tool} ${cmdArgs.join(" ")}`);
-    const proc = spawn(tool, cmdArgs);
+    try {
+      execSync(cmd, { timeout: 180000 });
+      console.log(`[Arşiv Çıkarıldı]: ${archivePath} -> ${targetDir}`);
+    } catch (e) {
+      console.warn("execSync arşiv çıkarma uyarısı:", e.message);
+      try {
+        execSync(`7z x -y -o"${targetDir}" "${archivePath}" >/dev/null 2>&1`, { timeout: 180000 });
+      } catch {}
+    }
 
-    proc.stdout.on("data", (data) => {
-      const str = data.toString();
-      const match = str.match(/(\d+)%/);
-      if (match && onProgress) {
-        onProgress(parseInt(match[1], 10));
+    // Geçici arşivi temizle
+    try {
+      if (fs.existsSync(archivePath) && fs.statSync(archivePath).isFile()) {
+        fs.unlinkSync(archivePath);
       }
-    });
+    } catch {}
 
-    proc.on("close", (code) => {
-      if (code === 0) {
-        // İndirilen geçici arşiv dosyasını temizle (yer tasarrufu)
-        try {
-          if (fs.existsSync(archivePath) && fs.statSync(archivePath).isFile()) {
-            fs.unlinkSync(archivePath);
-          }
-        } catch {}
-        resolve();
-      } else {
-        console.warn(`Arşiv çıkarma uyarı kodu: ${code}, mevcut dizin kabul ediliyor.`);
-        resolve();
-      }
-    });
-
-    proc.on("error", (err) => {
-      console.warn("Arşiv aracı hatası:", err.message);
-      resolve();
-    });
+    resolve();
   });
 }
 
@@ -315,7 +289,6 @@ function createWindow() {
     else mainWindow.maximize();
   });
 
-  // Kütüphane & Ayarlar IPC
   ipcMain.handle("get-installed-games", async () => loadInstalledGames());
   ipcMain.handle("get-settings", async () => loadSettings());
   ipcMain.handle("save-settings", async (_event, newSettings) => {
@@ -326,7 +299,7 @@ function createWindow() {
 
   ipcMain.on("open-game-folder", (_event, folderPath) => {
     if (folderPath && fs.existsSync(folderPath)) {
-      shell.showItemInFolder(folderPath);
+      shell.openPath(folderPath);
     } else {
       shell.openPath(getGamesInstallDir());
     }
@@ -392,7 +365,6 @@ function createWindow() {
 
   // 📥 GERÇEK İNDİRME MOTORU
   ipcMain.on("start-game-download", async (event, { gameTitle, appId, directUrl, host }) => {
-    // Gizli ve düzenli saklama dizini: ~/.local/share/Glibi/Games/<OyunAdı>/
     const safeTitle = gameTitle.replace(/[^a-zA-Z0-9_-]/g, "_");
     const gamesDir = getGamesInstallDir();
     const extractDir = path.join(gamesDir, safeTitle);
@@ -562,13 +534,11 @@ function startHttpDownload(gameTitle, appId, directUrl, tempArchive, extractDir)
           fileStream.close();
           sendProgress(gameTitle, appId, "extracting", 95, "Arşiv çıkarılıyor...", extractDir);
 
-          await extractGameArchive(tempArchive, extractDir, (p) => {
-            sendProgress(gameTitle, appId, "extracting", p, "Arşiv çıkarılıyor...", extractDir);
-          });
+          await extractGameArchive(tempArchive, extractDir);
 
           const exePath = findGameExecutable(extractDir);
           markGameInstalled(gameTitle, appId, tempArchive, extractDir, exePath);
-          sendProgress(gameTitle, appId, "completed", 100, "Hazır", extractDir);
+          sendProgress(gameTitle, appId, "completed", 100, "Tamamlandı", extractDir);
         });
 
         res.on("error", (err) => {

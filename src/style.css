@@ -1237,248 +1237,219 @@ html, body, #root {
   transform: translateY(-1px);
 }
 
-/* 🖱️ Şık & Minimalist Sağ Tık (Context Menu) */
-.custom-context-menu {
+/* 🖱️ Minimalist Sağ Tık Menüsü (Temiz & Logosuz) */
+.context-menu-pure {
   position: fixed;
   z-index: 9999;
-  background-color: #1a1b1c;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 6px;
-  width: 190px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(12px);
-  animation: fadeInContext 0.12s ease-out;
+  background-color: #161718;
+  border: 1px solid #282a2b;
+  border-radius: 5px;
+  padding: 4px;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
 }
 
-@keyframes fadeInContext {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.context-menu-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: #7d8184;
-  padding: 4px 8px 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 4px;
-}
-
-.context-menu-item {
+.context-item-pure {
   width: 100%;
   background: transparent;
   border: none;
-  color: #c9cccf;
+  color: #9da0a2;
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   padding: 6px 10px;
-  border-radius: 5px;
+  border-radius: 3px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.12s ease;
   text-align: left;
+  display: block;
+  transition: background-color 0.12s ease, color 0.12s ease;
 }
 
-.context-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+.context-item-pure:hover {
+  background-color: #242627;
   color: #ffffff;
 }
 
-.context-menu-item.play {
-  color: #4ade80;
+.context-item-pure.primary {
+  color: #ffffff;
   font-weight: 600;
 }
 
-.context-menu-item.play:hover {
-  background-color: rgba(74, 222, 128, 0.15);
-  color: #4ade80;
-}
-
-.context-menu-item.delete {
-  color: #f87171;
-}
-
-.context-menu-item.delete:hover {
-  background-color: rgba(248, 113, 113, 0.15);
+.context-item-pure.danger {
   color: #ef4444;
 }
 
-.context-menu-divider {
+.context-item-pure.danger:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.context-separator-pure {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.06);
-  margin: 4px 0;
+  background-color: #222425;
+  margin: 3px 0;
 }
 
-.context-icon {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-/* 🍷 Gelişmiş Ayarlar (Settings) & Wine Panel */
-.settings-card-box {
-  background-color: #121314;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 24px 28px;
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-
-.settings-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.settings-header-icon {
-  font-size: 32px;
-  margin-bottom: 2px;
-}
-
-.settings-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.settings-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  color: #9da0a3;
-  text-transform: uppercase;
-}
-
-.settings-select {
-  background-color: #1a1b1c;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-}
-
-.settings-select:focus {
-  border-color: #ffffff;
-}
-
-.settings-custom-input-row {
-  display: flex;
-  gap: 8px;
-}
-
-.settings-input {
+/* ⚙️ Minimalist Doğal Ayarlar Düzeni (Ortalamasız, Sol Kenar Hizalı) */
+.pure-settings-layout {
   flex: 1;
-  background-color: #1a1b1c;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  max-width: 520px;
+  gap: 22px;
+}
+
+.pure-settings-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-bottom: 1px solid #222425;
+  padding-bottom: 14px;
+}
+
+.pure-settings-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.pure-settings-subtitle {
+  font-size: 12px;
+  color: #66696b;
+}
+
+.pure-settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pure-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8c9092;
+  letter-spacing: 0.2px;
+}
+
+/* 🔽 Özel Tasarlanmış Custom Combobox / Dropdown */
+.custom-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown-trigger {
+  width: 100%;
+  background-color: #121314;
+  border: 1px solid #282a2b;
   color: #ffffff;
   font-family: inherit;
   font-size: 12px;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  user-select: none;
+}
+
+.custom-dropdown-trigger:hover,
+.custom-dropdown-trigger.open {
+  border-color: #404345;
+}
+
+.dropdown-arrow {
+  color: #7d8183;
+  transition: transform 0.18s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #121314;
+  border: 1px solid #282a2b;
+  border-radius: 4px;
+  padding: 4px;
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.custom-dropdown-option {
+  padding: 7px 10px;
+  font-size: 12px;
+  color: #9da0a2;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.custom-dropdown-option:hover {
+  background-color: #1d1e20;
+  color: #ffffff;
+}
+
+.custom-dropdown-option.selected {
+  background-color: #1a1b1d;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.option-check {
+  color: #ffffff;
+  font-size: 11px;
+}
+
+/* Özel Giriş Satırı */
+.pure-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.pure-text-input {
+  flex: 1;
+  background-color: #121314;
+  border: 1px solid #282a2b;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 4px;
   outline: none;
   transition: border-color 0.15s ease;
 }
 
-.settings-input:focus {
-  border-color: #ffffff;
+.pure-text-input:focus {
+  border-color: #444749;
 }
 
-.settings-save-btn {
-  background-color: #ffffff;
-  color: #121314;
-  border: none;
+.pure-action-button {
+  background-color: #242627;
+  color: #d1d5db;
+  border: 1px solid #333638;
   font-family: inherit;
   font-size: 12px;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.settings-save-btn:hover {
-  background-color: #e5e7eb;
-}
-
-.settings-info-box {
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.settings-info-badge {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  color: #38bdf8;
-  background-color: rgba(56, 189, 248, 0.12);
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.settings-info-text {
-  font-size: 11px;
-  color: #7d8184;
-  line-height: 1.4;
-}
-
-.settings-info-text code {
-  color: #e2e8f0;
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-family: monospace;
-}
-
-/* 🚀 Başlatma Bildirimi (Toast) */
-.launch-toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  background-color: #1a1b1c;
-  border: 1px solid rgba(74, 222, 128, 0.4);
-  color: #ffffff;
-  font-size: 12px;
   font-weight: 600;
-  padding: 10px 16px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-  animation: slideToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 7px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
 }
 
-@keyframes slideToast {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.toast-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #4ade80;
-  box-shadow: 0 0 8px #4ade80;
+.pure-action-button:hover {
+  background-color: #313436;
+  color: #ffffff;
 }
