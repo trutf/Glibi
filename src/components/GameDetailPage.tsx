@@ -43,6 +43,24 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
     setLoading(true);
     setIsDescExpanded(false);
 
+    // Oyun zaten indirilmiş mi kontrol et
+    if (window.electronAPI?.getInstalledGames) {
+      window.electronAPI.getInstalledGames().then((list) => {
+        if (!isMounted) return;
+        const isInstalled = list.some(
+          (g) => g.appId === appId || g.gameTitle.toLowerCase() === initialTitle.toLowerCase()
+        );
+        if (isInstalled) {
+          setDownloadState((prev) => ({
+            ...prev,
+            status: "completed",
+            progressPercent: 100,
+            speed: "Yüklendi",
+          }));
+        }
+      });
+    }
+
     fetchSteamGameData(appId)
       .then((res) => {
         if (!isMounted) return;
@@ -66,7 +84,8 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
     if (window.electronAPI?.onDownloadProgress) {
       window.electronAPI.onDownloadProgress((prog) => {
         if (!isMounted) return;
-        if (prog.gameTitle === (data?.name || initialTitle)) {
+        const currentTitle = data?.name || initialTitle;
+        if (prog.gameTitle.toLowerCase() === currentTitle.toLowerCase() || (prog.appId && prog.appId === appId)) {
           setDownloadState((prev) => ({
             ...prev,
             status: prog.status,
@@ -169,12 +188,18 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
                 )}
 
                 {downloadState.status === "completed" && (
-                  <button className="pure-install-btn installed" title="İndirme Tamamlandı">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <span>Yüklendi</span>
-                  </button>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      className="pure-install-btn installed"
+                      onClick={() => window.electronAPI?.openGameFolder("")}
+                      title="İndirilen Dosyayı Aç"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span>Yüklendi (Klasörü Aç)</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

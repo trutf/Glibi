@@ -18943,6 +18943,21 @@ var GameDetailPage = ({
     let isMounted = true;
     setLoading(true);
     setIsDescExpanded(false);
+    if (window.electronAPI?.getInstalledGames) {
+      window.electronAPI.getInstalledGames().then((list) => {
+        if (!isMounted)
+          return;
+        const isInstalled = list.some((g) => g.appId === appId || g.gameTitle.toLowerCase() === initialTitle.toLowerCase());
+        if (isInstalled) {
+          setDownloadState((prev) => ({
+            ...prev,
+            status: "completed",
+            progressPercent: 100,
+            speed: "Yüklendi"
+          }));
+        }
+      });
+    }
     fetchSteamGameData(appId).then((res) => {
       if (!isMounted)
         return;
@@ -18964,7 +18979,8 @@ var GameDetailPage = ({
       window.electronAPI.onDownloadProgress((prog) => {
         if (!isMounted)
           return;
-        if (prog.gameTitle === (data?.name || initialTitle)) {
+        const currentTitle = data?.name || initialTitle;
+        if (prog.gameTitle.toLowerCase() === currentTitle.toLowerCase() || prog.appId && prog.appId === appId) {
           setDownloadState((prev) => ({
             ...prev,
             status: prog.status,
@@ -19134,28 +19150,32 @@ var GameDetailPage = ({
                               }, undefined, true, undefined, this)
                             ]
                           }, undefined, true, undefined, this),
-                          downloadState.status === "completed" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                            className: "pure-install-btn installed",
-                            title: "İndirme Tamamlandı",
-                            children: [
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
-                                width: "14",
-                                height: "14",
-                                viewBox: "0 0 24 24",
-                                fill: "none",
-                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
-                                  d: "M5 13L9 17L19 7",
-                                  stroke: "currentColor",
-                                  strokeWidth: "2.4",
-                                  strokeLinecap: "round",
-                                  strokeLinejoin: "round"
+                          downloadState.status === "completed" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                            style: { display: "flex", gap: "8px" },
+                            children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                              className: "pure-install-btn installed",
+                              onClick: () => window.electronAPI?.openGameFolder(""),
+                              title: "İndirilen Dosyayı Aç",
+                              children: [
+                                /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
+                                  width: "14",
+                                  height: "14",
+                                  viewBox: "0 0 24 24",
+                                  fill: "none",
+                                  children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+                                    d: "M5 13L9 17L19 7",
+                                    stroke: "currentColor",
+                                    strokeWidth: "2.4",
+                                    strokeLinecap: "round",
+                                    strokeLinejoin: "round"
+                                  }, undefined, false, undefined, this)
+                                }, undefined, false, undefined, this),
+                                /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                  children: "Yüklendi (Klasörü Aç)"
                                 }, undefined, false, undefined, this)
-                              }, undefined, false, undefined, this),
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                children: "Yüklendi"
-                              }, undefined, false, undefined, this)
-                            ]
-                          }, undefined, true, undefined, this)
+                              ]
+                            }, undefined, true, undefined, this)
+                          }, undefined, false, undefined, this)
                         ]
                       }, undefined, true, undefined, this)
                     ]

@@ -76,6 +76,14 @@ function createWindow() {
   mainWindow.removeMenu();
   mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
 
+  // Filtre: undefined host isteklerini sessizce iptal et
+  mainWindow.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+    if (details.url.includes("undefined")) {
+      return callback({ cancel: true });
+    }
+    callback({});
+  });
+
   ipcMain.on("window-close", () => {
     mainWindow.close();
   });
@@ -136,7 +144,7 @@ function createWindow() {
  * Cloudflare Korumasını Aşarak SteamRIP & Buzzheavier Bağlantılarını Çözümle
  */
 async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
-  sendProgress(gameTitle, "resolving", 5, "SteamRIP taranıyor...", targetFile);
+  sendProgress(gameTitle, appId, "resolving", 5, "SteamRIP taranıyor...", targetFile);
 
   const cleanTitle = gameTitle
     .replace(/[:™®©]/g, "")
@@ -174,7 +182,7 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
     }
 
     console.log(`[Crawler] Post linkine gidiliyor: ${targetPostUrl}`);
-    sendProgress(gameTitle, "resolving", 25, "İndirme bağlantıları taranıyor...", targetFile);
+    sendProgress(gameTitle, appId, "resolving", 25, "İndirme bağlantıları taranıyor...", targetFile);
     await crawlerWin.loadURL(targetPostUrl);
     await new Promise((r) => setTimeout(r, 4000));
 
@@ -195,7 +203,7 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
 
     if (selectedHostLink) {
       console.log(`[Crawler] Hedef dosya sunucusu: ${selectedHostLink}`);
-      sendProgress(gameTitle, "resolving", 50, "Buzzheavier çözülüyor...", targetFile);
+      sendProgress(gameTitle, appId, "resolving", 50, "Buzzheavier çözülüyor...", targetFile);
 
       // Buzzheavier sayfasına SteamRIP referer ile git
       await crawlerWin.loadURL(selectedHostLink, {
@@ -284,13 +292,13 @@ function startHttpDownload(gameTitle, appId, directUrl, targetFile) {
           const speedMB = elapsedSeconds > 0 ? (receivedBytes / (1024 * 1024 * elapsedSeconds)).toFixed(1) : "0.0";
           const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 50;
 
-          sendProgress(gameTitle, "downloading", percent, `${speedMB} MB/s`, targetFile);
+          sendProgress(gameTitle, appId, "downloading", percent, `${speedMB} MB/s`, targetFile);
         });
 
         fileStream.on("finish", () => {
           fileStream.close();
           markGameInstalled(gameTitle, appId, targetFile);
-          sendProgress(gameTitle, "completed", 100, "Tamamlandı", targetFile);
+          sendProgress(gameTitle, appId, "completed", 100, "Tamamlandı", targetFile);
         });
 
         res.on("error", (err) => {
@@ -309,10 +317,11 @@ function startHttpDownload(gameTitle, appId, directUrl, targetFile) {
   }
 }
 
-function sendProgress(gameTitle, status, progressPercent, speed, downloadPath) {
+function sendProgress(gameTitle, appId, status, progressPercent, speed, downloadPath) {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send("download-progress-update", {
       gameTitle,
+      appId,
       status,
       progressPercent,
       speed,
@@ -327,7 +336,7 @@ function startFallbackDownload(gameTitle, appId, targetFile) {
     percent += 10;
     const speed = (28 + Math.random() * 6).toFixed(1) + " MB/s";
 
-    sendProgress(gameTitle, percent >= 100 ? "completed" : "downloading", Math.min(percent, 100), speed, targetFile);
+    sendProgress(gameTitle, appId, percent >= 100 ? "completed" : "downloading", Math.min(percent, 100), speed, targetFile);
 
     if (percent >= 100) {
       clearInterval(interval);
