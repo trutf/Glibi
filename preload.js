@@ -11,4 +11,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getInstalledGames: () => ipcRenderer.invoke("get-installed-games"),
   openGameFolder: (folderPath) => ipcRenderer.send("open-game-folder", folderPath),
   uninstallGame: (gameTitle) => ipcRenderer.invoke("uninstall-game", gameTitle),
+  launchGame: (gameTitle) => ipcRenderer.invoke("launch-game", gameTitle),
+  getSettings: () => ipcRenderer.invoke("get-settings"),
+  saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
+  getAvailableWine: () => ipcRenderer.invoke("get-available-wine"),
 });

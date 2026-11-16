@@ -188,16 +188,27 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
                 )}
 
                 {downloadState.status === "completed" && (
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <button
+                      className="pure-install-btn"
+                      style={{ backgroundColor: "#22c55e", color: "#ffffff" }}
+                      onClick={() => {
+                        const title = data?.name || initialTitle;
+                        (window.electronAPI as any)?.launchGame?.(title);
+                      }}
+                      title="Oyunu Wine ile Başlat"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                      <span>Oyunu Başlat</span>
+                    </button>
                     <button
                       className="pure-install-btn installed"
                       onClick={() => window.electronAPI?.openGameFolder("")}
-                      title="İndirilen Dosyayı Aç"
+                      title="İndirilen Dosya Konumu"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span>Yüklendi (Klasörü Aç)</span>
+                      <span>Klasörü Aç</span>
                     </button>
                   </div>
                 )}

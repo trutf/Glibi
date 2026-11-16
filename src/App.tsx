@@ -12,7 +12,20 @@ export interface InstalledGame {
   gameTitle: string;
   appId: number;
   downloadPath: string;
+  extractDir?: string;
+  exePath?: string;
   installedAt: string;
+}
+
+export interface WineVersion {
+  name: string;
+  path: string;
+  version: string;
+}
+
+export interface LauncherSettings {
+  winePath: string;
+  customWinePaths: string[];
 }
 
 declare global {
@@ -26,6 +39,10 @@ declare global {
       getInstalledGames: () => Promise<InstalledGame[]>;
       openGameFolder: (folderPath: string) => void;
       uninstallGame: (gameTitle: string) => Promise<InstalledGame[]>;
+      launchGame: (gameTitle: string) => Promise<{ success: boolean; error?: string }>;
+      getSettings: () => Promise<LauncherSettings>;
+      saveSettings: (settings: LauncherSettings) => Promise<LauncherSettings>;
+      getAvailableWine: () => Promise<WineVersion[]>;
     };
   }
 }
@@ -146,6 +163,20 @@ export const App: React.FC = () => {
   const [failedImgs, setFailedImgs] = useState<Record<string, boolean>>({});
   const [installedGames, setInstalledGames] = useState<InstalledGame[]>([]);
 
+  // Sağ Tık (Context Menu) Durumu
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    game: InstalledGame | null;
+  }>({ visible: false, x: 0, y: 0, game: null });
+
+  // Ayarlar & Wine Sürümü Durumu
+  const [availableWine, setAvailableWine] = useState<WineVersion[]>([]);
+  const [selectedWine, setSelectedWine] = useState<string>("wine");
+  const [customWineInput, setCustomWineInput] = useState<string>("");
+  const [launchMessage, setLaunchMessage] = useState<string>("");
+
   const refreshInstalledGames = () => {
     if (window.electronAPI?.getInstalledGames) {
       window.electronAPI.getInstalledGames().then((list) => {
@@ -158,6 +189,18 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     refreshInstalledGames();
+    if (window.electronAPI?.getAvailableWine) {
+      window.electronAPI.getAvailableWine().then(setAvailableWine);
+    }
+    if (window.electronAPI?.getSettings) {
+      window.electronAPI.getSettings().then((s) => {
+        if (s && s.winePath) setSelectedWine(s.winePath);
+      });
+    }
+
+    const closeContext = () => setContextMenu((prev) => ({ ...prev, visible: false }));
+    window.addEventListener("click", closeContext);
+    return () => window.removeEventListener("click", closeContext);
   }, [activeTab]);
 
   // 📄 Sayfalama (Pagination) Durumu
@@ -294,6 +337,73 @@ export const App: React.FC = () => {
         </div>
       </div>
 
+      {/* Sağ Tık (Context Menu) - Kütüphane Oyunları İçin */}
+      {contextMenu.visible && contextMenu.game && (
+        <div
+          className="custom-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="context-menu-title">{contextMenu.game.gameTitle}</div>
+          <button
+            className="context-menu-item play"
+            onClick={() => {
+              const game = contextMenu.game;
+              setContextMenu({ ...contextMenu, visible: false });
+              if (game && window.electronAPI?.launchGame) {
+                setLaunchMessage(`${game.gameTitle} Wine ile başlatılıyor...`);
+                window.electronAPI.launchGame(game.gameTitle).then((res) => {
+                  if (!res.success) {
+                    alert(`Başlatma Hatası: ${res.error}`);
+                  }
+                  setTimeout(() => setLaunchMessage(""), 3500);
+                });
+              }
+            }}
+          >
+            <span className="context-icon">▶</span>
+            <span>Wine ile Oyna</span>
+          </button>
+          <button
+            className="context-menu-item"
+            onClick={() => {
+              const game = contextMenu.game;
+              setContextMenu({ ...contextMenu, visible: false });
+              if (game) {
+                window.electronAPI?.openGameFolder(game.extractDir || game.downloadPath);
+              }
+            }}
+          >
+            <span className="context-icon">📁</span>
+            <span>Klasörü Aç</span>
+          </button>
+          <div className="context-menu-divider" />
+          <button
+            className="context-menu-item delete"
+            onClick={() => {
+              const game = contextMenu.game;
+              setContextMenu({ ...contextMenu, visible: false });
+              if (game && window.electronAPI?.uninstallGame) {
+                if (confirm(`"${game.gameTitle}" oyununu kütüphaneden ve diskten kaldırmak istiyor musun?`)) {
+                  window.electronAPI.uninstallGame(game.gameTitle).then(setInstalledGames);
+                }
+              }
+            }}
+          >
+            <span className="context-icon">🗑️</span>
+            <span>Oyunu Kaldır</span>
+          </button>
+        </div>
+      )}
+
+      {/* Başlatma Bildirimi */}
+      {launchMessage && (
+        <div className="launch-toast">
+          <span className="toast-dot" />
+          <span>{launchMessage}</span>
+        </div>
+      )}
+
       {/* OYUN DETAY SAYFASI */}
       {detailGame ? (
         <GameDetailPage
@@ -316,39 +426,29 @@ export const App: React.FC = () => {
                       title: item.gameTitle,
                     };
                     return (
-                      <div key={item.id} className="library-card-wrapper">
+                      <div
+                        key={item.id}
+                        className="library-card-wrapper"
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setContextMenu({
+                            visible: true,
+                            x: Math.min(e.clientX, window.innerWidth - 200),
+                            y: Math.min(e.clientY, window.innerHeight - 180),
+                            game: item,
+                          });
+                        }}
+                      >
                         <GameCard
                           game={gameObj}
-                          onOpenDetail={handleOpenDetail}
+                          onOpenDetail={() => {
+                            // Tıklayınca doğrudan Wine ile başlat veya detayını aç
+                            handleOpenDetail(gameObj.appId, gameObj.title);
+                          }}
                           failedImgs={failedImgs}
                           onImgError={handleImgError}
                         />
-                        <div className="library-card-actions">
-                          <button
-                            className="lib-action-btn open"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.electronAPI?.openGameFolder(item.downloadPath);
-                            }}
-                            title="Dosya Konumunu Aç"
-                          >
-                            Klasör
-                          </button>
-                          <button
-                            className="lib-action-btn delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (window.electronAPI?.uninstallGame) {
-                                window.electronAPI.uninstallGame(item.gameTitle).then((updated) => {
-                                  setInstalledGames(updated);
-                                });
-                              }
-                            }}
-                            title="Kütüphaneden Kaldır"
-                          >
-                            ✕
-                          </button>
-                        </div>
                       </div>
                     );
                   })}
@@ -462,9 +562,69 @@ export const App: React.FC = () => {
 
           {activeTab === "Settings" && (
             <div className="settings-container">
-              <div className="settings-card">
-                <h3 className="settings-title">Ayarlar</h3>
-                <p className="settings-desc">Launcher ve hesap tercihleri burada yer alacak.</p>
+              <div className="settings-card-box">
+                <div className="settings-section">
+                  <div className="settings-header-icon">🍷</div>
+                  <h3 className="settings-title">Wine & Proton Yapılandırması</h3>
+                  <p className="settings-desc">
+                    Oyunları başlatmak için kullanılan Wine / Proton sürümünü buradan seçebilir veya özel bir Wine binary yolu ekleyebilirsiniz.
+                  </p>
+                </div>
+
+                <div className="settings-field-group">
+                  <label className="settings-label">Aktif Wine Sürümü</label>
+                  <select
+                    className="settings-select"
+                    value={selectedWine}
+                    onChange={(e) => {
+                      const newPath = e.target.value;
+                      setSelectedWine(newPath);
+                      window.electronAPI?.saveSettings({ winePath: newPath, customWinePaths: [] });
+                    }}
+                  >
+                    {availableWine.map((w, idx) => (
+                      <option key={idx} value={w.path}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="settings-field-group">
+                  <label className="settings-label">Özel Wine Binary Yolu</label>
+                  <div className="settings-custom-input-row">
+                    <input
+                      type="text"
+                      className="settings-input"
+                      placeholder="/usr/bin/wine veya Proton wine yolu..."
+                      value={customWineInput}
+                      onChange={(e) => setCustomWineInput(e.target.value)}
+                    />
+                    <button
+                      className="settings-save-btn"
+                      onClick={() => {
+                        if (customWineInput.trim()) {
+                          setSelectedWine(customWineInput.trim());
+                          window.electronAPI?.saveSettings({
+                            winePath: customWineInput.trim(),
+                            customWinePaths: [customWineInput.trim()],
+                          }).then(() => {
+                            window.electronAPI?.getAvailableWine().then(setAvailableWine);
+                          });
+                        }
+                      }}
+                    >
+                      Uygula
+                    </button>
+                  </div>
+                </div>
+
+                <div className="settings-info-box">
+                  <span className="settings-info-badge">BİLGİ</span>
+                  <span className="settings-info-text">
+                    İndirilen oyunlar arka planda <code>~/.local/share/Glibi/Games</code> dizinine çıkartılır ve seçilen Wine sürümüyle tek tıkla çalıştırılır.
+                  </span>
+                </div>
               </div>
             </div>
           )}
