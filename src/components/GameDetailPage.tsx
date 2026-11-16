@@ -83,71 +83,23 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
   }, [appId]);
 
   // Gerçek Crawler & İndirici: SteamRIP -> Filehost Link Çözümleme -> Electron Stream
-  const handleStartAutoDownload = async () => {
+  const handleStartAutoDownload = () => {
     const gameName = data?.name || initialTitle;
     setDownloadState({
       status: "fetching_rip",
-      progressPercent: 0,
+      progressPercent: 5,
       speed: "SteamRIP taranıyor...",
       hostName: "SteamRIP",
       ripUrl: "",
     });
 
-    try {
-      // 1. SteamRIP arama motorunu çalıştır
-      const ripPageUrl = await searchSteamrip(gameName);
-      let directDownloadUrl = "";
-      let chosenHost = "SteamRIP";
-
-      if (ripPageUrl) {
-        setDownloadState((prev) => ({
-          ...prev,
-          speed: "İndirme bağlantıları taranıyor...",
-          ripUrl: ripPageUrl,
-        }));
-
-        // 2. Sayfadaki filehostları ayıkla
-        const links = await extractSteamripDownloadLinks(ripPageUrl);
-        const preferredHost =
-          links.find((l) => l.hostName === "Buzzheavier") ||
-          links.find((l) => l.hostName === "GoFile") ||
-          links[0];
-
-        if (preferredHost) {
-          chosenHost = preferredHost.hostName;
-          setDownloadState((prev) => ({
-            ...prev,
-            hostName: chosenHost,
-            speed: `${chosenHost} çözülüyor...`,
-          }));
-
-          // 3. Doğrudan stream linkini çöz
-          directDownloadUrl = await resolveDirectFileUrl(preferredHost);
-        }
-      }
-
-      setDownloadState((prev) => ({
-        ...prev,
-        status: "downloading",
-        speed: "İndirme başlatıldı",
-      }));
-
-      // 4. Electron indirme motorunu tetikle (link çözülemediyse backend crawler devreye girer)
-      window.electronAPI?.startDownload({
-        gameTitle: gameName,
-        appId: appId,
-        directUrl: directDownloadUrl,
-        host: chosenHost,
-      });
-    } catch (e) {
-      console.error("İndirme başlatma hatası:", e);
-      window.electronAPI?.startDownload({
-        gameTitle: gameName,
-        appId: appId,
-        directUrl: "",
-        host: "SteamRIP",
-      });
-    }
+    // Doğrudan Electron arka plan crawler ve resolver'ına devret
+    window.electronAPI?.startDownload({
+      gameTitle: gameName,
+      appId: appId,
+      directUrl: "",
+      host: "SteamRIP",
+    });
   };
 
   return (

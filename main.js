@@ -8,6 +8,7 @@ const https = require("https");
 app.commandLine.appendSwitch("log-level", "3");
 app.commandLine.appendSwitch("disable-logging");
 app.commandLine.appendSwitch("disable-gpu-vsync");
+app.commandLine.appendSwitch("disable-gpu");
 
 let mainWindow = null;
 let libraryDataPath = "";
@@ -158,11 +159,11 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
 
     // 1. SteamRIP arama sayfasını yükle
     await crawlerWin.loadURL(searchUrl);
-    await new Promise((r) => setTimeout(r, 3500));
+    await new Promise((r) => setTimeout(r, 4000));
 
-    // Arama sonuç sayfasından ilk oyun makale linkini al
+    // Arama sonuç sayfasından ilk geçerli makale linkini al
     const postUrls = await crawlerWin.webContents.executeJavaScript(`
-      Array.from(document.querySelectorAll("h2.post-title a, article a, .all-posts a")).map(a => a.href).filter(h => h.includes("-free-download"))
+      Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.startsWith("https://steamrip.com/") && h.includes("-free-download"))
     `);
 
     let targetPostUrl = postUrls && postUrls.length > 0 ? postUrls[0] : null;
@@ -172,18 +173,28 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
       targetPostUrl = `https://steamrip.com/${slug}-free-download/`;
     }
 
+    console.log(`[Crawler] Post linkine gidiliyor: ${targetPostUrl}`);
     sendProgress(gameTitle, "resolving", 25, "İndirme bağlantıları taranıyor...", targetFile);
     await crawlerWin.loadURL(targetPostUrl);
-    await new Promise((r) => setTimeout(r, 3500));
+    await new Promise((r) => setTimeout(r, 4000));
 
-    // Makale içindeki indirme linklerini ve Buzzheavier / bzzhr linklerini yakala
+    // Makale içindeki doğrudan DOWNLOAD HERE / filehost butonlarını al
     const hostLinks = await crawlerWin.webContents.executeJavaScript(`
-      Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.includes("buzzheavier") || h.includes("bzzhr") || h.includes("gofile.io"))
+      (() => {
+        const links = Array.from(document.querySelectorAll("a")).map(a => ({
+          text: a.innerText.trim(),
+          href: a.href
+        }));
+        const dlBtn = links.find(x => x.text.toLowerCase().includes("download here"));
+        if (dlBtn && dlBtn.href) return [dlBtn.href];
+        return links.map(x => x.href).filter(h => h.includes("bzzhr") || h.includes("buzzheavier") || h.includes("gofile.io") || h.includes("megadb"));
+      })()
     `);
 
     let selectedHostLink = hostLinks && hostLinks.length > 0 ? hostLinks[0] : null;
 
     if (selectedHostLink) {
+      console.log(`[Crawler] Hedef dosya sunucusu: ${selectedHostLink}`);
       sendProgress(gameTitle, "resolving", 50, "Buzzheavier çözülüyor...", targetFile);
 
       // Buzzheavier sayfasına SteamRIP referer ile git
@@ -208,18 +219,20 @@ async function resolveSteamripWithElectron(gameTitle, appId, targetFile) {
       `);
 
       let finalUrl = "";
+      const currentHostUrl = crawlerWin.webContents.getURL();
+      const hostOrigin = (currentHostUrl && currentHostUrl.startsWith("http")) ? new URL(currentHostUrl).origin : "https://bzzhr.to";
+
       if (tokenPath) {
         if (tokenPath.startsWith("http://") || tokenPath.startsWith("https://")) {
           finalUrl = tokenPath;
         } else {
-          const origin = new URL(crawlerWin.webContents.getURL()).origin;
-          finalUrl = `${origin}${tokenPath.startsWith("/") ? "" : "/"}${tokenPath}`;
+          finalUrl = `${hostOrigin}${tokenPath.startsWith("/") ? "" : "/"}${tokenPath}`;
         }
       } else {
         finalUrl = selectedHostLink.endsWith("/download") ? selectedHostLink : `${selectedHostLink}/download`;
       }
 
-      console.log(`[Crawler Başarılı] Gerçek indirme linki çözüldü: ${finalUrl}`);
+      console.log(`[Crawler Başarılı] Gerçek stream URL: ${finalUrl}`);
       crawlerWin.destroy();
       crawlerWin = null;
 
