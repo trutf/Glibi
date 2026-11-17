@@ -19653,7 +19653,7 @@ var steamrip_catalog_default = [
   {
     title: "A Game of Thrones: The Board Game – Digital Edition",
     ripUrl: "https://steamrip.com/game-of-thrones-the-board-game-digital-edition-free-download-n1/",
-    appId: 0
+    appId: 1075190
   },
   {
     title: "A Gummy’s Life",
@@ -20243,17 +20243,17 @@ var steamrip_catalog_default = [
   {
     title: "AMID EVIL",
     ripUrl: "https://steamrip.com/amid-evil-free-download-u1/",
-    appId: 0
+    appId: 673130
   },
   {
     title: "Amnesia: Rebirth",
     ripUrl: "https://steamrip.com/amnesia-rebirth-free-download/",
-    appId: 0
+    appId: 1944430
   },
   {
     title: "Amnesia: The Bunker",
     ripUrl: "https://steamrip.com/amnesia-the-bunker-free-download-i1/",
-    appId: 0
+    appId: 1944430
   },
   {
     title: "Amnesia: The Dark Descent",
@@ -20263,17 +20263,17 @@ var steamrip_catalog_default = [
   {
     title: "Among the Sleep Enhanced Edition",
     ripUrl: "https://steamrip.com/among-the-sleep-enhanced-edition-free-download-1w/",
-    appId: 0
+    appId: 250620
   },
   {
     title: "Among the Trolls",
     ripUrl: "https://steamrip.com/among-the-trolls-free-download/",
-    appId: 0
+    appId: 1675260
   },
   {
     title: "Among Trees",
     ripUrl: "https://steamrip.com/among-trees-free-download-1s/",
-    appId: 0
+    appId: 897730
   },
   {
     title: "Among Us",
@@ -20283,42 +20283,42 @@ var steamrip_catalog_default = [
   {
     title: "Among Us VR",
     ripUrl: "https://steamrip.com/among-us-vr-free-download-x1/",
-    appId: 0
+    appId: 1849900
   },
   {
     title: "Ancestors: The Humankind Odyssey",
     ripUrl: "https://steamrip.com/ancestors-the-humankind-odyssey-free-download-1s/",
-    appId: 0
+    appId: 536270
   },
   {
     title: "Ancient Cities",
     ripUrl: "https://steamrip.com/ancient-cities-free-download/",
-    appId: 0
+    appId: 667610
   },
   {
     title: "Ancient Farm",
     ripUrl: "https://steamrip.com/ancient-farm-free-download/",
-    appId: 0
+    appId: 1933930
   },
   {
     title: "Ancient Warfare 3",
     ripUrl: "https://steamrip.com/ancient-warfare-3-free-download-q1/",
-    appId: 0
+    appId: 758990
   },
   {
     title: "and Roger",
     ripUrl: "https://steamrip.com/and-roger-free-download/",
-    appId: 0
+    appId: 3308870
   },
   {
     title: "Angel Engine",
     ripUrl: "https://steamrip.com/angel-engine-free-download/",
-    appId: 0
+    appId: 4173750
   },
   {
     title: "Angel’s Gear",
     ripUrl: "https://steamrip.com/angels-gear-free-download-1j/",
-    appId: 0
+    appId: 2241560
   },
   {
     title: "Angels Fall First",
@@ -20328,7 +20328,7 @@ var steamrip_catalog_default = [
   {
     title: "Anger Foot",
     ripUrl: "https://steamrip.com/anger-foot-free-download/",
-    appId: 0
+    appId: 1978590
   },
   {
     title: "Angry Birds Space",
@@ -20338,17 +20338,17 @@ var steamrip_catalog_default = [
   {
     title: "Animal Crossing: New Horizons",
     ripUrl: "https://steamrip.com/animal-crossing-new-horizons-free-download-21/",
-    appId: 0
+    appId: 1630290
   },
   {
     title: "Animal Shelter 2",
     ripUrl: "https://steamrip.com/animal-shelter-2-free-download/",
-    appId: 0
+    appId: 2658510
   },
   {
     title: "Animal Shelter",
     ripUrl: "https://steamrip.com/animal-shelter-free-download-1u/",
-    appId: 0
+    appId: 2658510
   },
   {
     title: "ANIMAL WELL",
@@ -20358,17 +20358,17 @@ var steamrip_catalog_default = [
   {
     title: "Animaly Bar: NO HUMANITY!",
     ripUrl: "https://steamrip.com/animaly-bar-no-humanity-free-download/",
-    appId: 0
+    appId: 4580600
   },
   {
     title: "Anime Shop Simulator",
     ripUrl: "https://steamrip.com/anime-shop-simulator-free-download/",
-    appId: 0
+    appId: 3393280
   },
   {
     title: "Annihilated",
     ripUrl: "https://steamrip.com/annihilated-free-download/",
-    appId: 0
+    appId: 2638080
   },
   {
     title: "Anno 1800",
@@ -20383,112 +20383,112 @@ var steamrip_catalog_default = [
   {
     title: "ANNO: Mutationem",
     ripUrl: "https://steamrip.com/anno-mutationem-free-download-z1/",
-    appId: 0
+    appId: 3274580
   },
   {
     title: "ANOMALITH",
     ripUrl: "https://steamrip.com/anomalith-free-download/",
-    appId: 0
+    appId: 4017880
   },
   {
     title: "Anomaly Agent",
     ripUrl: "https://steamrip.com/anomaly-agent-free-download-a1/",
-    appId: 0
+    appId: 2378620
   },
   {
     title: "Anonymous Hacker Simulator",
     ripUrl: "https://steamrip.com/anonymous-hacker-simulator-free-download/",
-    appId: 0
+    appId: 2487060
   },
   {
     title: "Another Crab’s Treasure",
     ripUrl: "https://steamrip.com/another-crabs-treasure-free-download/",
-    appId: 0
+    appId: 1887840
   },
   {
     title: "Another Eden Begins",
     ripUrl: "https://steamrip.com/another-eden-begins-free-download/",
-    appId: 0
+    appId: 4163960
   },
   {
     title: "ANTHEM#9",
     ripUrl: "https://steamrip.com/anthem9-free-download/",
-    appId: 0
+    appId: 2656490
   },
   {
     title: "ANTONBLAST",
     ripUrl: "https://steamrip.com/antonblast-free-download/",
-    appId: 0
+    appId: 1887400
   },
   {
     title: "Ants Took My Eyeball",
     ripUrl: "https://steamrip.com/ants-took-my-eyeball-free-download/",
-    appId: 0
+    appId: 1627890
   },
   {
     title: "Anvil Saga",
     ripUrl: "https://steamrip.com/anvil-saga-free-download-1h/",
-    appId: 0
+    appId: 1587540
   },
   {
     title: "Aoi Tori",
     ripUrl: "https://steamrip.com/aoi-tori-free-download/",
-    appId: 0
+    appId: 2741260
   },
   {
     title: "Apex Rush",
     ripUrl: "https://steamrip.com/apex-rush-free-download/",
-    appId: 0
+    appId: 2638250
   },
   {
     title: "APICO",
     ripUrl: "https://steamrip.com/apico-free-download-1y/",
-    appId: 0
+    appId: 1390190
   },
   {
     title: "Apocalypse Party",
     ripUrl: "https://steamrip.com/apocalypse-party-free-download/",
-    appId: 0
+    appId: 2351560
   },
   {
     title: "Apollo Justice: Ace Attorney Trilogy",
     ripUrl: "https://steamrip.com/apollo-justice-ace-attorney-trilogy-free-download/",
-    appId: 0
+    appId: 2187220
   },
   {
     title: "Approximately Up",
     ripUrl: "https://steamrip.com/approximately-up-free-download/",
-    appId: 0
+    appId: 3904850
   },
   {
     title: "Aquapark Tycoon",
     ripUrl: "https://steamrip.com/aquapark-tycoon-free-download/",
-    appId: 0
+    appId: 2819470
   },
   {
     title: "Aquarist",
     ripUrl: "https://steamrip.com/aquarist-free-download/",
-    appId: 0
+    appId: 1430760
   },
   {
     title: "Aquatic Store Simulator",
     ripUrl: "https://steamrip.com/aquatic-store-simulator-free-download/",
-    appId: 0
+    appId: 3073580
   },
   {
     title: "Aquatico",
     ripUrl: "https://steamrip.com/aquatico-free-download-k1/",
-    appId: 0
+    appId: 1812300
   },
   {
     title: "Aragami 2",
     ripUrl: "https://steamrip.com/aragami-2-free-download-x1/",
-    appId: 0
+    appId: 1158370
   },
   {
     title: "Aragami",
     ripUrl: "https://steamrip.com/aragami-free-download-x1/",
-    appId: 0
+    appId: 1158370
   },
   {
     title: "Arcade Paradise",
@@ -44439,9 +44439,21 @@ var GameCard = ({ game, onOpenDetail, failedImgs, onImgError }) => {
     setTransform("perspective(700px) rotateX(0deg) rotateY(0deg)");
     setGlareStyle({ opacity: 0 });
   };
+  const [imgStage, setImgStage] = import_react2.useState(0);
   const hasValidAppId = game.appId && game.appId > 0;
-  const isFailed = failedImgs[game.id] || !hasValidAppId;
-  const steamUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`;
+  const candidateUrls = hasValidAppId ? [
+    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`,
+    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/capsule_616x353.jpg`,
+    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/header.jpg`
+  ] : [];
+  const handleNextFallback = () => {
+    if (imgStage < candidateUrls.length - 1) {
+      setImgStage(imgStage + 1);
+    } else {
+      onImgError(game.id);
+    }
+  };
+  const isFailed = !hasValidAppId || failedImgs[game.id] || imgStage >= candidateUrls.length;
   return /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
     ref: cardRef,
     className: "game-card",
@@ -44456,10 +44468,10 @@ var GameCard = ({ game, onOpenDetail, failedImgs, onImgError }) => {
         },
         children: [
           !isFailed ? /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("img", {
-            src: steamUrl,
+            src: candidateUrls[imgStage],
             alt: "",
             className: "poster-img",
-            onError: () => onImgError(game.id)
+            onError: handleNextFallback
           }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("div", {
             className: "poster-placeholder",
             children: /* @__PURE__ */ jsx_dev_runtime2.jsxDEV("span", {

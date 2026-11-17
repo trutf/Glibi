@@ -270,16 +270,16 @@ html, body, #root {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 6px 16px 54px;
+  padding: 6px 16px 85px;
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
   column-gap: 8px;
-  row-gap: 8px;
+  row-gap: 12px;
   align-content: start;
 }
 
 .store-container .games-container.store-grid {
-  padding: 0;
+  padding: 0 0 85px 0;
 }
 
 .games-container::-webkit-scrollbar {
@@ -348,13 +348,13 @@ html, body, #root {
 
 /* Title Slot directly below the poster artwork */
 .title-slot {
-  height: 20px;
+  min-height: 22px;
   width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1px;
+  margin-top: 4px;
   background: transparent;
   z-index: 1;
 }
@@ -362,22 +362,21 @@ html, body, #root {
 .game-title {
   font-family: "Open Sans", "Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: #9da0a2;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: #8c9092;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
-  opacity: 0;
-  transform: translateY(-100%);
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease-out;
+  opacity: 0.85;
+  transform: translateY(0);
+  transition: color 0.15s ease, opacity 0.15s ease;
 }
 
 .game-card:hover .game-title {
   opacity: 1;
-  transform: translateY(0);
   color: #ffffff;
 }
 

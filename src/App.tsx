@@ -126,9 +126,27 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
     setGlareStyle({ opacity: 0 });
   };
 
+  const [imgStage, setImgStage] = useState<number>(0);
   const hasValidAppId = game.appId && game.appId > 0;
-  const isFailed = failedImgs[game.id] || !hasValidAppId;
-  const steamUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`;
+
+  // Sıralı CDN kaynakları: dikey kütüphane afişi -> kapsül afiş -> header
+  const candidateUrls = hasValidAppId
+    ? [
+        `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`,
+        `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/capsule_616x353.jpg`,
+        `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/header.jpg`,
+      ]
+    : [];
+
+  const handleNextFallback = () => {
+    if (imgStage < candidateUrls.length - 1) {
+      setImgStage(imgStage + 1);
+    } else {
+      onImgError(game.id);
+    }
+  };
+
+  const isFailed = !hasValidAppId || failedImgs[game.id] || imgStage >= candidateUrls.length;
 
   return (
     <div
@@ -146,10 +164,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
       >
         {!isFailed ? (
           <img
-            src={steamUrl}
+            src={candidateUrls[imgStage]}
             alt=""
             className="poster-img"
-            onError={() => onImgError(game.id)}
+            onError={handleNextFallback}
           />
         ) : (
           <div className="poster-placeholder">
