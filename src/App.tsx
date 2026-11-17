@@ -126,9 +126,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
     setGlareStyle({ opacity: 0 });
   };
 
+  const hasValidAppId = game.appId && game.appId > 0;
+  const isFailed = failedImgs[game.id] || !hasValidAppId;
   const steamUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`;
-  const localFallback = `assets/covers/${game.id}.jpg`;
-  const imgSrc = failedImgs[game.id] ? localFallback : steamUrl;
 
   return (
     <div
@@ -144,12 +144,18 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
           transform: transform || undefined,
         }}
       >
-        <img
-          src={imgSrc}
-          alt={game.title}
-          className="poster-img"
-          onError={() => onImgError(game.id)}
-        />
+        {!isFailed ? (
+          <img
+            src={steamUrl}
+            alt=""
+            className="poster-img"
+            onError={() => onImgError(game.id)}
+          />
+        ) : (
+          <div className="poster-placeholder">
+            <span className="placeholder-title">{game.title}</span>
+          </div>
+        )}
         <div className="card-glare" style={glareStyle} />
       </div>
 
