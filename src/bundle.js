@@ -18769,725 +18769,6 @@ var import_client = __toESM(require_client());
 // src/App.tsx
 var import_react2 = __toESM(require_react());
 
-// src/components/GameDetailPage.tsx
-var import_react = __toESM(require_react());
-
-// src/services/steamService.ts
-var memoryCache = new Map;
-var CACHE_TTL_MS = 1000 * 60 * 30;
-function parseHighestOwners(ownersStr) {
-  if (!ownersStr)
-    return null;
-  const parts = ownersStr.split("..");
-  if (parts.length >= 2) {
-    const highStr = parts[1].trim();
-    const cleanNum = parseInt(highStr.replace(/[^0-9]/g, ""), 10);
-    if (!isNaN(cleanNum)) {
-      if (cleanNum >= 1e6) {
-        return `${(cleanNum / 1e6).toFixed(0)}M+`;
-      }
-      return `${cleanNum.toLocaleString("tr-TR")}+`;
-    }
-  }
-  return ownersStr;
-}
-async function fetchSteamGameData(appId) {
-  const cached = memoryCache.get(appId);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-    return cached.data;
-  }
-  const [storeRes, spyRes, playersRes, reviewsRes] = await Promise.allSettled([
-    fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=tr&l=turkish`),
-    fetch(`https://steamspy.com/api.php?request=appdetails&appid=${appId}`),
-    fetch(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`),
-    fetch(`https://store.steampowered.com/appreviews/${appId}?json=1&l=turkish&num_per_page=6`)
-  ]);
-  let storeJson = null;
-  let spyJson = null;
-  let playersJson = null;
-  let reviewsJson = null;
-  try {
-    if (storeRes.status === "fulfilled" && storeRes.value.ok) {
-      storeJson = await storeRes.value.json();
-    }
-  } catch (e) {
-    console.warn("Store API json parse error", e);
-  }
-  try {
-    if (spyRes.status === "fulfilled" && spyRes.value.ok) {
-      spyJson = await spyRes.value.json();
-    }
-  } catch (e) {
-    console.warn("SteamSpy parse error", e);
-  }
-  try {
-    if (playersRes.status === "fulfilled" && playersRes.value.ok) {
-      playersJson = await playersRes.value.json();
-    }
-  } catch (e) {
-    console.warn("Players API parse error", e);
-  }
-  try {
-    if (reviewsRes.status === "fulfilled" && reviewsRes.value.ok) {
-      reviewsJson = await reviewsRes.value.json();
-    }
-  } catch (e) {
-    console.warn("Reviews API parse error", e);
-  }
-  const appData = storeJson?.[appId]?.data || {};
-  const screenshots = (appData.screenshots || []).map((s) => ({
-    id: s.id,
-    pathThumbnail: s.path_thumbnail || "",
-    pathFull: s.path_full || ""
-  }));
-  const movies = (appData.movies || []).map((m) => ({
-    id: m.id,
-    title: m.name || "",
-    thumbnail: m.thumbnail || "",
-    mp4: m.mp4?.max || m.mp4?.["480"] || "",
-    webm: m.webm?.max || m.webm?.["480"] || ""
-  }));
-  const tags = spyJson?.tags ? Object.keys(spyJson.tags) : [];
-  const rawReviews = reviewsJson?.reviews || [];
-  const userReviews = rawReviews.map((r) => ({
-    id: r.recommendationid || "",
-    authorSteamId: r.author?.steamid || "",
-    playtimeHours: Math.round((r.author?.playtime_forever || 0) / 60 * 10) / 10,
-    votedUp: Boolean(r.voted_up),
-    reviewText: r.review || "",
-    createdDate: new Date((r.timestamp_created || 0) * 1000).toLocaleDateString("tr-TR")
-  }));
-  const compiled = {
-    appId,
-    name: appData.name || spyJson?.name || "Bilinmeyen Oyun",
-    type: appData.type || "game",
-    shortDescription: appData.short_description || "",
-    detailedDescription: appData.detailed_description || "",
-    developers: appData.developers || (spyJson?.developer ? [spyJson.developer] : []),
-    publishers: appData.publishers || (spyJson?.publisher ? [spyJson.publisher] : []),
-    releaseDate: appData.release_date?.date || "Belirtilmedi",
-    isFree: Boolean(appData.is_free),
-    requiredAge: Number(appData.required_age || 0),
-    images: {
-      libraryCover: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/library_600x900.jpg`,
-      header: appData.header_image || `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
-      background: appData.background || "",
-      backgroundRaw: appData.background_raw || "",
-      screenshots
-    },
-    movies,
-    features: {
-      genres: (appData.genres || []).map((g) => g.description),
-      categories: (appData.categories || []).map((c) => c.description),
-      tags,
-      platforms: {
-        windows: Boolean(appData.platforms?.windows),
-        mac: Boolean(appData.platforms?.mac),
-        linux: Boolean(appData.platforms?.linux)
-      },
-      languages: appData.supported_languages || "",
-      controllerSupport: appData.controller_support,
-      achievementCount: appData.achievements?.total || 0,
-      metacriticScore: appData.metacritic?.score,
-      recommendationsCount: appData.recommendations?.total
-    },
-    systemRequirements: {
-      pc: {
-        minimum: typeof appData.pc_requirements?.minimum === "string" ? appData.pc_requirements.minimum : undefined,
-        recommended: typeof appData.pc_requirements?.recommended === "string" ? appData.pc_requirements.recommended : undefined
-      },
-      mac: {
-        minimum: typeof appData.mac_requirements?.minimum === "string" ? appData.mac_requirements.minimum : undefined,
-        recommended: typeof appData.mac_requirements?.recommended === "string" ? appData.mac_requirements.recommended : undefined
-      },
-      linux: {
-        minimum: typeof appData.linux_requirements?.minimum === "string" ? appData.linux_requirements.minimum : undefined,
-        recommended: typeof appData.linux_requirements?.recommended === "string" ? appData.linux_requirements.recommended : undefined
-      }
-    },
-    stats: {
-      currentPlayers: playersJson?.response?.player_count ?? null,
-      estimatedOwners: parseHighestOwners(spyJson?.owners),
-      averagePlaytimeForever: spyJson?.average_forever ?? 0,
-      averagePlaytime2Weeks: spyJson?.average_2weeks ?? 0,
-      positiveReviewsCount: reviewsJson?.query_summary?.total_positive ?? spyJson?.positive ?? 0,
-      negativeReviewsCount: reviewsJson?.query_summary?.total_negative ?? spyJson?.negative ?? 0,
-      reviewScoreDesc: reviewsJson?.query_summary?.review_score_desc || "Değerlendirme Yok",
-      totalReviews: reviewsJson?.query_summary?.total_reviews ?? 0
-    },
-    userReviews
-  };
-  memoryCache.set(appId, { timestamp: Date.now(), data: compiled });
-  return compiled;
-}
-
-// src/components/GameDetailPage.tsx
-var jsx_dev_runtime = __toESM(require_jsx_dev_runtime());
-var GameDetailPage = ({
-  appId,
-  initialTitle,
-  ripUrl,
-  onBack
-}) => {
-  const [data, setData] = import_react.useState(null);
-  const [loading, setLoading] = import_react.useState(true);
-  const [activeMedia, setActiveMedia] = import_react.useState(null);
-  const [isDescExpanded, setIsDescExpanded] = import_react.useState(false);
-  const [downloadState, setDownloadState] = import_react.useState({
-    status: "idle",
-    progressPercent: 0,
-    speed: "",
-    hostName: ""
-  });
-  import_react.useEffect(() => {
-    let isMounted = true;
-    setLoading(true);
-    setIsDescExpanded(false);
-    if (window.electronAPI?.getInstalledGames) {
-      window.electronAPI.getInstalledGames().then((list) => {
-        if (!isMounted)
-          return;
-        const isInstalled = list.some((g) => g.appId === appId || g.gameTitle.toLowerCase() === initialTitle.toLowerCase());
-        if (isInstalled) {
-          setDownloadState((prev) => ({
-            ...prev,
-            status: "completed",
-            progressPercent: 100,
-            speed: "Yüklendi"
-          }));
-        }
-      });
-    }
-    fetchSteamGameData(appId).then((res) => {
-      if (!isMounted)
-        return;
-      setData(res);
-      if (res.movies && res.movies.length > 0 && res.movies[0].mp4) {
-        setActiveMedia({ type: "video", url: res.movies[0].mp4 });
-      } else if (res.images.screenshots && res.images.screenshots.length > 0) {
-        setActiveMedia({ type: "image", url: res.images.screenshots[0].pathFull });
-      } else {
-        setActiveMedia({ type: "image", url: res.images.header });
-      }
-    }).catch((err) => {
-      console.error("Game data load error", err);
-    }).finally(() => {
-      if (isMounted)
-        setLoading(false);
-    });
-    if (window.electronAPI?.onDownloadProgress) {
-      window.electronAPI.onDownloadProgress((prog) => {
-        if (!isMounted)
-          return;
-        const currentTitle = data?.name || initialTitle;
-        if (prog.gameTitle.toLowerCase() === currentTitle.toLowerCase() || prog.appId && prog.appId === appId) {
-          setDownloadState((prev) => ({
-            ...prev,
-            status: prog.status,
-            progressPercent: prog.progressPercent,
-            speed: prog.speed
-          }));
-        }
-      });
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [appId]);
-  const handleStartAutoDownload = () => {
-    const gameName = data?.name || initialTitle;
-    setDownloadState({
-      status: "fetching_rip",
-      progressPercent: 5,
-      speed: "SteamRIP taranıyor...",
-      hostName: "SteamRIP",
-      ripUrl: ""
-    });
-    window.electronAPI?.startDownload({
-      gameTitle: gameName,
-      appId,
-      directUrl: "",
-      ripUrl: ripUrl || "",
-      host: "SteamRIP"
-    });
-  };
-  return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-    className: "game-detail-viewport",
-    children: [
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-        className: "detail-top-nav",
-        children: [
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-            className: "back-btn",
-            onClick: onBack,
-            title: "Geri Dön",
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
-                width: "18",
-                height: "18",
-                viewBox: "0 0 24 24",
-                fill: "none",
-                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
-                  d: "M19 12H5M5 12L12 19M5 12L12 5",
-                  stroke: "currentColor",
-                  strokeWidth: "2",
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round"
-                }, undefined, false, undefined, this)
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                className: "back-btn-text",
-                children: "Geri"
-              }, undefined, false, undefined, this)
-            ]
-          }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-            className: "detail-header-title",
-            children: data?.name || initialTitle
-          }, undefined, false, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-            style: { width: 70 }
-          }, undefined, false, undefined, this)
-        ]
-      }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-        className: "detail-scroll-content",
-        children: [
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-            className: "detail-header-pure",
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "detail-pure-left",
-                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                  className: "detail-poster-box",
-                  children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
-                    src: data?.images.libraryCover || `assets/covers/${appId}.jpg`,
-                    alt: data?.name || initialTitle,
-                    className: "detail-poster-img"
-                  }, undefined, false, undefined, this)
-                }, undefined, false, undefined, this)
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "detail-pure-right",
-                children: [
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "detail-title-action-row",
-                    children: [
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h1", {
-                        className: "detail-game-h1",
-                        children: data?.name || initialTitle
-                      }, undefined, false, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "download-action-group",
-                        children: [
-                          downloadState.status === "idle" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                            className: "pure-install-btn",
-                            onClick: handleStartAutoDownload,
-                            children: [
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
-                                width: "14",
-                                height: "14",
-                                viewBox: "0 0 24 24",
-                                fill: "none",
-                                children: [
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
-                                    d: "M12 3V16M12 16L7 11M12 16L17 11",
-                                    stroke: "currentColor",
-                                    strokeWidth: "2.4",
-                                    strokeLinecap: "round",
-                                    strokeLinejoin: "round"
-                                  }, undefined, false, undefined, this),
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
-                                    d: "M3 19H21",
-                                    stroke: "currentColor",
-                                    strokeWidth: "2.4",
-                                    strokeLinecap: "round"
-                                  }, undefined, false, undefined, this)
-                                ]
-                              }, undefined, true, undefined, this),
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                children: "Yükle"
-                              }, undefined, false, undefined, this)
-                            ]
-                          }, undefined, true, undefined, this),
-                          downloadState.status === "fetching_rip" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                            className: "download-resolving-badge",
-                            children: [
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                className: "spinner-dot"
-                              }, undefined, false, undefined, this),
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                children: "SteamRIP Çözülüyor..."
-                              }, undefined, false, undefined, this)
-                            ]
-                          }, undefined, true, undefined, this),
-                          (downloadState.status === "downloading" || downloadState.status === "paused" || downloadState.status === "extracting") && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                            className: "download-active-panel",
-                            children: [
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                                className: "download-progress-track",
-                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                                  className: "download-progress-bar",
-                                  style: { width: `${downloadState.progressPercent}%` }
-                                }, undefined, false, undefined, this)
-                              }, undefined, false, undefined, this),
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                                className: "download-meta-text",
-                                children: [
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                    className: "progress-percent",
-                                    children: [
-                                      "%",
-                                      downloadState.progressPercent,
-                                      " ",
-                                      downloadState.status === "extracting" ? "· Arşiv Açılıyor" : ""
-                                    ]
-                                  }, undefined, true, undefined, this),
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                    className: "download-speed-num",
-                                    children: downloadState.speed
-                                  }, undefined, false, undefined, this),
-                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                                    className: "download-ctrl-btns",
-                                    children: [
-                                      downloadState.status === "downloading" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                                        className: "ctrl-icon-btn",
-                                        onClick: () => window.electronAPI?.pauseDownload?.(data?.name || initialTitle),
-                                        title: "Duraklat",
-                                        children: "❚❚"
-                                      }, undefined, false, undefined, this),
-                                      downloadState.status === "paused" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                                        className: "ctrl-icon-btn",
-                                        onClick: () => window.electronAPI?.resumeDownload?.(data?.name || initialTitle),
-                                        title: "Devam Et",
-                                        children: "▶"
-                                      }, undefined, false, undefined, this),
-                                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                                        className: "ctrl-icon-btn cancel",
-                                        onClick: () => {
-                                          window.electronAPI?.cancelDownload?.(data?.name || initialTitle);
-                                          setDownloadState({ status: "idle", progressPercent: 0, speed: "", hostName: "" });
-                                        },
-                                        title: "İptal Et",
-                                        children: "✕"
-                                      }, undefined, false, undefined, this)
-                                    ]
-                                  }, undefined, true, undefined, this)
-                                ]
-                              }, undefined, true, undefined, this)
-                            ]
-                          }, undefined, true, undefined, this),
-                          downloadState.status === "completed" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                            style: { display: "flex", gap: "8px", alignItems: "center" },
-                            children: [
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                                className: "pure-install-btn",
-                                onClick: () => {
-                                  const title = data?.name || initialTitle;
-                                  window.electronAPI?.launchGame?.(title).then((res) => {
-                                    if (res && !res.success) {
-                                      alert(`Başlatılamadı: ${res.error}`);
-                                    }
-                                  });
-                                },
-                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                  children: "Oyunu Başlat"
-                                }, undefined, false, undefined, this)
-                              }, undefined, false, undefined, this),
-                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                                className: "pure-install-btn installed",
-                                onClick: () => window.electronAPI?.openGameFolder(""),
-                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                                  children: "Dosya Konumu"
-                                }, undefined, false, undefined, this)
-                              }, undefined, false, undefined, this)
-                            ]
-                          }, undefined, true, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "detail-genres-row",
-                    children: [
-                      data?.features.genres.slice(0, 3).map((g) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                        className: "detail-genre-pill",
-                        children: g
-                      }, g, false, undefined, this)),
-                      data?.isFree && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                        className: "detail-free-pill",
-                        children: "Ücretsiz"
-                      }, undefined, false, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("p", {
-                    className: "detail-short-desc",
-                    children: data?.shortDescription || "Oyun detayları yükleniyor..."
-                  }, undefined, false, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "detail-pure-stats-row",
-                    children: [
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "pure-stat-item",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-label",
-                            children: "Anlık"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-value",
-                            children: data?.stats.currentPlayers !== null ? data?.stats.currentPlayers.toLocaleString("tr-TR") : "—"
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "pure-stat-item",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-label",
-                            children: "Tahmini Sahip"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-value",
-                            children: data?.stats.estimatedOwners || "—"
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "pure-stat-item",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-label",
-                            children: "Değerlendirme"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-value",
-                            children: data?.stats.reviewScoreDesc || "—"
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "pure-stat-item",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-label",
-                            children: "Geliştirici"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-value",
-                            children: data?.developers[0] || "—"
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "pure-stat-item",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-label",
-                            children: "Çıkış"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            className: "pure-stat-value",
-                            children: data?.releaseDate || "—"
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this)
-                ]
-              }, undefined, true, undefined, this)
-            ]
-          }, undefined, true, undefined, this),
-          data && (data.movies.length > 0 || data.images.screenshots.length > 0) && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-            className: "detail-media-section",
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "media-stage",
-                children: activeMedia?.type === "video" ? /* @__PURE__ */ jsx_dev_runtime.jsxDEV("video", {
-                  src: activeMedia.url,
-                  controls: true,
-                  autoPlay: true,
-                  muted: true,
-                  className: "stage-video"
-                }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
-                  src: activeMedia?.url,
-                  alt: "",
-                  className: "stage-image"
-                }, undefined, false, undefined, this)
-              }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "media-thumbs-row",
-                children: [
-                  data.movies.map((m) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: `media-thumb-item ${activeMedia?.url === m.mp4 ? "active" : ""}`,
-                    onClick: () => m.mp4 && setActiveMedia({ type: "video", url: m.mp4 }),
-                    children: [
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
-                        src: m.thumbnail,
-                        alt: m.title,
-                        className: "thumb-img"
-                      }, undefined, false, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "play-badge",
-                        children: "▶"
-                      }, undefined, false, undefined, this)
-                    ]
-                  }, m.id, true, undefined, this)),
-                  data.images.screenshots.map((s) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: `media-thumb-item ${activeMedia?.url === s.pathFull ? "active" : ""}`,
-                    onClick: () => setActiveMedia({ type: "image", url: s.pathFull }),
-                    children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
-                      src: s.pathThumbnail,
-                      alt: "",
-                      className: "thumb-img"
-                    }, undefined, false, undefined, this)
-                  }, s.id, false, undefined, this))
-                ]
-              }, undefined, true, undefined, this)
-            ]
-          }, undefined, true, undefined, this),
-          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-            className: "detail-pure-body",
-            children: [
-              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "expandable-desc-card",
-                children: [
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "expandable-header",
-                    onClick: () => setIsDescExpanded(!isDescExpanded),
-                    children: [
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                        className: "pure-section-title",
-                        style: { margin: 0 },
-                        children: "Oyun Hakkında"
-                      }, undefined, false, undefined, this),
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-                        className: "expand-toggle-btn",
-                        children: [
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                            children: isDescExpanded ? "Daralt" : "Devamını Oku"
-                          }, undefined, false, undefined, this),
-                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
-                            className: `arrow-icon ${isDescExpanded ? "open" : ""}`,
-                            width: "12",
-                            height: "12",
-                            viewBox: "0 0 24 24",
-                            fill: "none",
-                            children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
-                              d: "M6 9L12 15L18 9",
-                              stroke: "currentColor",
-                              strokeWidth: "2.5",
-                              strokeLinecap: "round",
-                              strokeLinejoin: "round"
-                            }, undefined, false, undefined, this)
-                          }, undefined, false, undefined, this)
-                        ]
-                      }, undefined, true, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: `expandable-content ${isDescExpanded ? "expanded" : "collapsed"}`,
-                    children: [
-                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "detailed-desc-html",
-                        dangerouslySetInnerHTML: {
-                          __html: data?.detailedDescription || "<p>Açıklama bulunamadı.</p>"
-                        }
-                      }, undefined, false, undefined, this),
-                      !isDescExpanded && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "expandable-fade-mask"
-                      }, undefined, false, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this)
-                ]
-              }, undefined, true, undefined, this),
-              (data?.systemRequirements.pc.minimum || data?.systemRequirements.pc.recommended) && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "detail-pure-sysreq-section",
-                children: [
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
-                    className: "pure-section-title",
-                    children: "Sistem Gereksinimleri"
-                  }, undefined, false, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "sys-req-grid",
-                    children: [
-                      data?.systemRequirements.pc.minimum && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "sys-req-block",
-                        dangerouslySetInnerHTML: { __html: data.systemRequirements.pc.minimum }
-                      }, undefined, false, undefined, this),
-                      data?.systemRequirements.pc.recommended && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                        className: "sys-req-block",
-                        dangerouslySetInnerHTML: { __html: data.systemRequirements.pc.recommended }
-                      }, undefined, false, undefined, this)
-                    ]
-                  }, undefined, true, undefined, this)
-                ]
-              }, undefined, true, undefined, this),
-              data?.features.tags && data.features.tags.length > 0 && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "detail-pure-tags-section",
-                children: [
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
-                    className: "pure-section-title",
-                    children: "Etiketler"
-                  }, undefined, false, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "tags-cloud",
-                    children: data.features.tags.slice(0, 14).map((t) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                      className: "community-tag",
-                      children: t
-                    }, t, false, undefined, this))
-                  }, undefined, false, undefined, this)
-                ]
-              }, undefined, true, undefined, this),
-              data && data.userReviews.length > 0 && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                className: "detail-pure-reviews-section",
-                children: [
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
-                    className: "pure-section-title",
-                    children: "Oyuncu Yorumları"
-                  }, undefined, false, undefined, this),
-                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                    className: "user-reviews-grid",
-                    children: data.userReviews.slice(0, 4).map((r) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                      className: "pure-review-card",
-                      children: [
-                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-                          className: "review-meta-line",
-                          children: [
-                            /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                              className: `review-thumb-icon ${r.votedUp ? "up" : "down"}`,
-                              children: r.votedUp ? "\uD83D\uDC4D Tavsiye Ediliyor" : "\uD83D\uDC4E Tavsiye Edilmiyor"
-                            }, undefined, false, undefined, this),
-                            /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                              className: "review-hours",
-                              children: [
-                                r.playtimeHours,
-                                " saat"
-                              ]
-                            }, undefined, true, undefined, this)
-                          ]
-                        }, undefined, true, undefined, this),
-                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("p", {
-                          className: "review-snippet",
-                          children: r.reviewText
-                        }, undefined, false, undefined, this),
-                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
-                          className: "review-date",
-                          children: r.createdDate
-                        }, undefined, false, undefined, this)
-                      ]
-                    }, r.id, true, undefined, this))
-                  }, undefined, false, undefined, this)
-                ]
-              }, undefined, true, undefined, this)
-            ]
-          }, undefined, true, undefined, this)
-        ]
-      }, undefined, true, undefined, this)
-    ]
-  }, undefined, true, undefined, this);
-};
-
 // src/data/steamrip_catalog.json
 var steamrip_catalog_default = [
   {
@@ -44377,6 +43658,732 @@ async function searchSteamStore(query) {
     return ALL_STEAMRIP_GAMES.slice(0, 72);
   return ALL_STEAMRIP_GAMES.filter((g) => g.title.toLowerCase().includes(q));
 }
+
+// src/components/GameDetailPage.tsx
+var import_react = __toESM(require_react());
+
+// src/services/steamService.ts
+var memoryCache = new Map;
+var CACHE_TTL_MS = 1000 * 60 * 30;
+function parseHighestOwners(ownersStr) {
+  if (!ownersStr)
+    return null;
+  const parts = ownersStr.split("..");
+  if (parts.length >= 2) {
+    const highStr = parts[1].trim();
+    const cleanNum = parseInt(highStr.replace(/[^0-9]/g, ""), 10);
+    if (!isNaN(cleanNum)) {
+      if (cleanNum >= 1e6) {
+        return `${(cleanNum / 1e6).toFixed(0)}M+`;
+      }
+      return `${cleanNum.toLocaleString("tr-TR")}+`;
+    }
+  }
+  return ownersStr;
+}
+async function fetchSteamGameData(appId) {
+  const cached = memoryCache.get(appId);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+  const [storeRes, spyRes, playersRes, reviewsRes] = await Promise.allSettled([
+    fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=tr&l=turkish`),
+    fetch(`https://steamspy.com/api.php?request=appdetails&appid=${appId}`),
+    fetch(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`),
+    fetch(`https://store.steampowered.com/appreviews/${appId}?json=1&l=turkish&num_per_page=6`)
+  ]);
+  let storeJson = null;
+  let spyJson = null;
+  let playersJson = null;
+  let reviewsJson = null;
+  try {
+    if (storeRes.status === "fulfilled" && storeRes.value.ok) {
+      storeJson = await storeRes.value.json();
+    }
+  } catch (e) {
+    console.warn("Store API json parse error", e);
+  }
+  try {
+    if (spyRes.status === "fulfilled" && spyRes.value.ok) {
+      spyJson = await spyRes.value.json();
+    }
+  } catch (e) {
+    console.warn("SteamSpy parse error", e);
+  }
+  try {
+    if (playersRes.status === "fulfilled" && playersRes.value.ok) {
+      playersJson = await playersRes.value.json();
+    }
+  } catch (e) {
+    console.warn("Players API parse error", e);
+  }
+  try {
+    if (reviewsRes.status === "fulfilled" && reviewsRes.value.ok) {
+      reviewsJson = await reviewsRes.value.json();
+    }
+  } catch (e) {
+    console.warn("Reviews API parse error", e);
+  }
+  const appData = storeJson?.[appId]?.data || {};
+  const screenshots = (appData.screenshots || []).map((s) => ({
+    id: s.id,
+    pathThumbnail: s.path_thumbnail || "",
+    pathFull: s.path_full || ""
+  }));
+  const movies = (appData.movies || []).map((m) => ({
+    id: m.id,
+    title: m.name || "",
+    thumbnail: m.thumbnail || "",
+    mp4: m.mp4?.max || m.mp4?.["480"] || "",
+    webm: m.webm?.max || m.webm?.["480"] || ""
+  }));
+  const tags = spyJson?.tags ? Object.keys(spyJson.tags) : [];
+  const rawReviews = reviewsJson?.reviews || [];
+  const userReviews = rawReviews.map((r) => ({
+    id: r.recommendationid || "",
+    authorSteamId: r.author?.steamid || "",
+    playtimeHours: Math.round((r.author?.playtime_forever || 0) / 60 * 10) / 10,
+    votedUp: Boolean(r.voted_up),
+    reviewText: r.review || "",
+    createdDate: new Date((r.timestamp_created || 0) * 1000).toLocaleDateString("tr-TR")
+  }));
+  const compiled = {
+    appId,
+    name: appData.name || spyJson?.name || "Bilinmeyen Oyun",
+    type: appData.type || "game",
+    shortDescription: appData.short_description || "",
+    detailedDescription: appData.detailed_description || "",
+    developers: appData.developers || (spyJson?.developer ? [spyJson.developer] : []),
+    publishers: appData.publishers || (spyJson?.publisher ? [spyJson.publisher] : []),
+    releaseDate: appData.release_date?.date || "Belirtilmedi",
+    isFree: Boolean(appData.is_free),
+    requiredAge: Number(appData.required_age || 0),
+    images: {
+      libraryCover: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/library_600x900.jpg`,
+      header: appData.header_image || `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
+      background: appData.background || "",
+      backgroundRaw: appData.background_raw || "",
+      screenshots
+    },
+    movies,
+    features: {
+      genres: (appData.genres || []).map((g) => g.description),
+      categories: (appData.categories || []).map((c) => c.description),
+      tags,
+      platforms: {
+        windows: Boolean(appData.platforms?.windows),
+        mac: Boolean(appData.platforms?.mac),
+        linux: Boolean(appData.platforms?.linux)
+      },
+      languages: appData.supported_languages || "",
+      controllerSupport: appData.controller_support,
+      achievementCount: appData.achievements?.total || 0,
+      metacriticScore: appData.metacritic?.score,
+      recommendationsCount: appData.recommendations?.total
+    },
+    systemRequirements: {
+      pc: {
+        minimum: typeof appData.pc_requirements?.minimum === "string" ? appData.pc_requirements.minimum : undefined,
+        recommended: typeof appData.pc_requirements?.recommended === "string" ? appData.pc_requirements.recommended : undefined
+      },
+      mac: {
+        minimum: typeof appData.mac_requirements?.minimum === "string" ? appData.mac_requirements.minimum : undefined,
+        recommended: typeof appData.mac_requirements?.recommended === "string" ? appData.mac_requirements.recommended : undefined
+      },
+      linux: {
+        minimum: typeof appData.linux_requirements?.minimum === "string" ? appData.linux_requirements.minimum : undefined,
+        recommended: typeof appData.linux_requirements?.recommended === "string" ? appData.linux_requirements.recommended : undefined
+      }
+    },
+    stats: {
+      currentPlayers: playersJson?.response?.player_count ?? null,
+      estimatedOwners: parseHighestOwners(spyJson?.owners),
+      averagePlaytimeForever: spyJson?.average_forever ?? 0,
+      averagePlaytime2Weeks: spyJson?.average_2weeks ?? 0,
+      positiveReviewsCount: reviewsJson?.query_summary?.total_positive ?? spyJson?.positive ?? 0,
+      negativeReviewsCount: reviewsJson?.query_summary?.total_negative ?? spyJson?.negative ?? 0,
+      reviewScoreDesc: reviewsJson?.query_summary?.review_score_desc || "Değerlendirme Yok",
+      totalReviews: reviewsJson?.query_summary?.total_reviews ?? 0
+    },
+    userReviews
+  };
+  memoryCache.set(appId, { timestamp: Date.now(), data: compiled });
+  return compiled;
+}
+
+// src/components/GameDetailPage.tsx
+var jsx_dev_runtime = __toESM(require_jsx_dev_runtime());
+var GameDetailPage = ({
+  appId,
+  initialTitle,
+  ripUrl,
+  onBack
+}) => {
+  const [data, setData] = import_react.useState(null);
+  const [loading, setLoading] = import_react.useState(true);
+  const [activeMedia, setActiveMedia] = import_react.useState(null);
+  const [isDescExpanded, setIsDescExpanded] = import_react.useState(false);
+  const [downloadState, setDownloadState] = import_react.useState({
+    status: "idle",
+    progressPercent: 0,
+    speed: "",
+    hostName: ""
+  });
+  import_react.useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    setIsDescExpanded(false);
+    if (window.electronAPI?.getInstalledGames) {
+      window.electronAPI.getInstalledGames().then((list) => {
+        if (!isMounted)
+          return;
+        const isInstalled = list.some((g) => g.appId === appId || g.gameTitle.toLowerCase() === initialTitle.toLowerCase());
+        if (isInstalled) {
+          setDownloadState((prev) => ({
+            ...prev,
+            status: "completed",
+            progressPercent: 100,
+            speed: "Yüklendi"
+          }));
+        }
+      });
+    }
+    fetchSteamGameData(appId).then((res) => {
+      if (!isMounted)
+        return;
+      setData(res);
+      if (res.movies && res.movies.length > 0 && res.movies[0].mp4) {
+        setActiveMedia({ type: "video", url: res.movies[0].mp4 });
+      } else if (res.images.screenshots && res.images.screenshots.length > 0) {
+        setActiveMedia({ type: "image", url: res.images.screenshots[0].pathFull });
+      } else {
+        setActiveMedia({ type: "image", url: res.images.header });
+      }
+    }).catch((err) => {
+      console.error("Game data load error", err);
+    }).finally(() => {
+      if (isMounted)
+        setLoading(false);
+    });
+    if (window.electronAPI?.onDownloadProgress) {
+      window.electronAPI.onDownloadProgress((prog) => {
+        if (!isMounted)
+          return;
+        const currentTitle = data?.name || initialTitle;
+        if (prog.gameTitle.toLowerCase() === currentTitle.toLowerCase() || prog.appId && prog.appId === appId) {
+          setDownloadState((prev) => ({
+            ...prev,
+            status: prog.status,
+            progressPercent: prog.progressPercent,
+            speed: prog.speed
+          }));
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [appId]);
+  const handleStartAutoDownload = () => {
+    const gameName = data?.name || initialTitle;
+    setDownloadState({
+      status: "fetching_rip",
+      progressPercent: 5,
+      speed: "SteamRIP taranıyor...",
+      hostName: "SteamRIP"
+    });
+    let targetRipUrl = ripUrl || "";
+    if (!targetRipUrl) {
+      const match = ALL_STEAMRIP_GAMES.find((g) => appId && g.appId === appId || g.title.toLowerCase() === gameName.toLowerCase());
+      if (match && match.ripUrl) {
+        targetRipUrl = match.ripUrl;
+      }
+    }
+    console.log(`[İndirme Başlat] Oyun: ${gameName}, AppID: ${appId}, ripUrl: ${targetRipUrl}`);
+    window.electronAPI?.startDownload({
+      gameTitle: gameName,
+      appId,
+      directUrl: "",
+      ripUrl: targetRipUrl,
+      host: "SteamRIP"
+    });
+  };
+  return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+    className: "game-detail-viewport",
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+        className: "detail-top-nav",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+            className: "back-btn",
+            onClick: onBack,
+            title: "Geri Dön",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
+                width: "18",
+                height: "18",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+                  d: "M19 12H5M5 12L12 19M5 12L12 5",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                }, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                className: "back-btn-text",
+                children: "Geri"
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+            className: "detail-header-title",
+            children: data?.name || initialTitle
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            style: { width: 70 }
+          }, undefined, false, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+        className: "detail-scroll-content",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            className: "detail-header-pure",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "detail-pure-left",
+                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                  className: "detail-poster-box",
+                  children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
+                    src: data?.images.libraryCover || `assets/covers/${appId}.jpg`,
+                    alt: data?.name || initialTitle,
+                    className: "detail-poster-img"
+                  }, undefined, false, undefined, this)
+                }, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "detail-pure-right",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "detail-title-action-row",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h1", {
+                        className: "detail-game-h1",
+                        children: data?.name || initialTitle
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "download-action-group",
+                        children: [
+                          downloadState.status === "idle" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                            className: "pure-install-btn",
+                            onClick: handleStartAutoDownload,
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
+                                width: "14",
+                                height: "14",
+                                viewBox: "0 0 24 24",
+                                fill: "none",
+                                children: [
+                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+                                    d: "M12 3V16M12 16L7 11M12 16L17 11",
+                                    stroke: "currentColor",
+                                    strokeWidth: "2.4",
+                                    strokeLinecap: "round",
+                                    strokeLinejoin: "round"
+                                  }, undefined, false, undefined, this),
+                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+                                    d: "M3 19H21",
+                                    stroke: "currentColor",
+                                    strokeWidth: "2.4",
+                                    strokeLinecap: "round"
+                                  }, undefined, false, undefined, this)
+                                ]
+                              }, undefined, true, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                children: "Yükle"
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          downloadState.status === "fetching_rip" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                            className: "download-resolving-badge",
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                className: "spinner-dot"
+                              }, undefined, false, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                children: "SteamRIP Çözülüyor..."
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          (downloadState.status === "downloading" || downloadState.status === "paused" || downloadState.status === "extracting") && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                            className: "download-active-panel",
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                                className: "download-progress-track",
+                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                                  className: "download-progress-bar",
+                                  style: { width: `${downloadState.progressPercent}%` }
+                                }, undefined, false, undefined, this)
+                              }, undefined, false, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                                className: "download-meta-text",
+                                children: [
+                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                    className: "progress-percent",
+                                    children: [
+                                      "%",
+                                      downloadState.progressPercent,
+                                      " ",
+                                      downloadState.status === "extracting" ? "· Arşiv Açılıyor" : ""
+                                    ]
+                                  }, undefined, true, undefined, this),
+                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                    className: "download-speed-num",
+                                    children: downloadState.speed
+                                  }, undefined, false, undefined, this),
+                                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                                    className: "download-ctrl-btns",
+                                    children: [
+                                      downloadState.status === "downloading" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                                        className: "ctrl-icon-btn",
+                                        onClick: () => window.electronAPI?.pauseDownload?.(data?.name || initialTitle),
+                                        title: "Duraklat",
+                                        children: "❚❚"
+                                      }, undefined, false, undefined, this),
+                                      downloadState.status === "paused" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                                        className: "ctrl-icon-btn",
+                                        onClick: () => window.electronAPI?.resumeDownload?.(data?.name || initialTitle),
+                                        title: "Devam Et",
+                                        children: "▶"
+                                      }, undefined, false, undefined, this),
+                                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                                        className: "ctrl-icon-btn cancel",
+                                        onClick: () => {
+                                          window.electronAPI?.cancelDownload?.(data?.name || initialTitle);
+                                          setDownloadState({ status: "idle", progressPercent: 0, speed: "", hostName: "" });
+                                        },
+                                        title: "İptal Et",
+                                        children: "✕"
+                                      }, undefined, false, undefined, this)
+                                    ]
+                                  }, undefined, true, undefined, this)
+                                ]
+                              }, undefined, true, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          downloadState.status === "completed" && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                            style: { display: "flex", gap: "8px", alignItems: "center" },
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                                className: "pure-install-btn",
+                                onClick: () => {
+                                  const title = data?.name || initialTitle;
+                                  window.electronAPI?.launchGame?.(title).then((res) => {
+                                    if (res && !res.success) {
+                                      alert(`Başlatılamadı: ${res.error}`);
+                                    }
+                                  });
+                                },
+                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                  children: "Oyunu Başlat"
+                                }, undefined, false, undefined, this)
+                              }, undefined, false, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                                className: "pure-install-btn installed",
+                                onClick: () => window.electronAPI?.openGameFolder(""),
+                                children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                                  children: "Dosya Konumu"
+                                }, undefined, false, undefined, this)
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "detail-genres-row",
+                    children: [
+                      data?.features.genres.slice(0, 3).map((g) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                        className: "detail-genre-pill",
+                        children: g
+                      }, g, false, undefined, this)),
+                      data?.isFree && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                        className: "detail-free-pill",
+                        children: "Ücretsiz"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("p", {
+                    className: "detail-short-desc",
+                    children: data?.shortDescription || "Oyun detayları yükleniyor..."
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "detail-pure-stats-row",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "pure-stat-item",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-label",
+                            children: "Anlık"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-value",
+                            children: data?.stats.currentPlayers !== null ? data?.stats.currentPlayers.toLocaleString("tr-TR") : "—"
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "pure-stat-item",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-label",
+                            children: "Tahmini Sahip"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-value",
+                            children: data?.stats.estimatedOwners || "—"
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "pure-stat-item",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-label",
+                            children: "Değerlendirme"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-value",
+                            children: data?.stats.reviewScoreDesc || "—"
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "pure-stat-item",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-label",
+                            children: "Geliştirici"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-value",
+                            children: data?.developers[0] || "—"
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "pure-stat-item",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-label",
+                            children: "Çıkış"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            className: "pure-stat-value",
+                            children: data?.releaseDate || "—"
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
+          data && (data.movies.length > 0 || data.images.screenshots.length > 0) && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            className: "detail-media-section",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "media-stage",
+                children: activeMedia?.type === "video" ? /* @__PURE__ */ jsx_dev_runtime.jsxDEV("video", {
+                  src: activeMedia.url,
+                  controls: true,
+                  autoPlay: true,
+                  muted: true,
+                  className: "stage-video"
+                }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
+                  src: activeMedia?.url,
+                  alt: "",
+                  className: "stage-image"
+                }, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "media-thumbs-row",
+                children: [
+                  data.movies.map((m) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: `media-thumb-item ${activeMedia?.url === m.mp4 ? "active" : ""}`,
+                    onClick: () => m.mp4 && setActiveMedia({ type: "video", url: m.mp4 }),
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
+                        src: m.thumbnail,
+                        alt: m.title,
+                        className: "thumb-img"
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "play-badge",
+                        children: "▶"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, m.id, true, undefined, this)),
+                  data.images.screenshots.map((s) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: `media-thumb-item ${activeMedia?.url === s.pathFull ? "active" : ""}`,
+                    onClick: () => setActiveMedia({ type: "image", url: s.pathFull }),
+                    children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("img", {
+                      src: s.pathThumbnail,
+                      alt: "",
+                      className: "thumb-img"
+                    }, undefined, false, undefined, this)
+                  }, s.id, false, undefined, this))
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            className: "detail-pure-body",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "expandable-desc-card",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "expandable-header",
+                    onClick: () => setIsDescExpanded(!isDescExpanded),
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                        className: "pure-section-title",
+                        style: { margin: 0 },
+                        children: "Oyun Hakkında"
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
+                        className: "expand-toggle-btn",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                            children: isDescExpanded ? "Daralt" : "Devamını Oku"
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("svg", {
+                            className: `arrow-icon ${isDescExpanded ? "open" : ""}`,
+                            width: "12",
+                            height: "12",
+                            viewBox: "0 0 24 24",
+                            fill: "none",
+                            children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV("path", {
+                              d: "M6 9L12 15L18 9",
+                              stroke: "currentColor",
+                              strokeWidth: "2.5",
+                              strokeLinecap: "round",
+                              strokeLinejoin: "round"
+                            }, undefined, false, undefined, this)
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: `expandable-content ${isDescExpanded ? "expanded" : "collapsed"}`,
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "detailed-desc-html",
+                        dangerouslySetInnerHTML: {
+                          __html: data?.detailedDescription || "<p>Açıklama bulunamadı.</p>"
+                        }
+                      }, undefined, false, undefined, this),
+                      !isDescExpanded && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "expandable-fade-mask"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              (data?.systemRequirements.pc.minimum || data?.systemRequirements.pc.recommended) && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "detail-pure-sysreq-section",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
+                    className: "pure-section-title",
+                    children: "Sistem Gereksinimleri"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "sys-req-grid",
+                    children: [
+                      data?.systemRequirements.pc.minimum && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "sys-req-block",
+                        dangerouslySetInnerHTML: { __html: data.systemRequirements.pc.minimum }
+                      }, undefined, false, undefined, this),
+                      data?.systemRequirements.pc.recommended && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                        className: "sys-req-block",
+                        dangerouslySetInnerHTML: { __html: data.systemRequirements.pc.recommended }
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              data?.features.tags && data.features.tags.length > 0 && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "detail-pure-tags-section",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
+                    className: "pure-section-title",
+                    children: "Etiketler"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "tags-cloud",
+                    children: data.features.tags.slice(0, 14).map((t) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                      className: "community-tag",
+                      children: t
+                    }, t, false, undefined, this))
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              data && data.userReviews.length > 0 && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                className: "detail-pure-reviews-section",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h3", {
+                    className: "pure-section-title",
+                    children: "Oyuncu Yorumları"
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                    className: "user-reviews-grid",
+                    children: data.userReviews.slice(0, 4).map((r) => /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                      className: "pure-review-card",
+                      children: [
+                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+                          className: "review-meta-line",
+                          children: [
+                            /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                              className: `review-thumb-icon ${r.votedUp ? "up" : "down"}`,
+                              children: r.votedUp ? "\uD83D\uDC4D Tavsiye Ediliyor" : "\uD83D\uDC4E Tavsiye Edilmiyor"
+                            }, undefined, false, undefined, this),
+                            /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                              className: "review-hours",
+                              children: [
+                                r.playtimeHours,
+                                " saat"
+                              ]
+                            }, undefined, true, undefined, this)
+                          ]
+                        }, undefined, true, undefined, this),
+                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("p", {
+                          className: "review-snippet",
+                          children: r.reviewText
+                        }, undefined, false, undefined, this),
+                        /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+                          className: "review-date",
+                          children: r.createdDate
+                        }, undefined, false, undefined, this)
+                      ]
+                    }, r.id, true, undefined, this))
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+};
 
 // src/App.tsx
 var jsx_dev_runtime2 = __toESM(require_jsx_dev_runtime());

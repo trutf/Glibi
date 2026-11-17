@@ -1,3 +1,4 @@
+import { ALL_STEAMRIP_GAMES } from "../services/steamCatalog";
 import React, { useEffect, useState } from "react";
 import { fetchSteamGameData, SteamGameData } from "../services/steamService";
 import {
@@ -109,15 +110,26 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
       progressPercent: 5,
       speed: "SteamRIP taranıyor...",
       hostName: "SteamRIP",
-      ripUrl: "",
     });
 
-    // Doğrudan Electron arka plan crawler ve resolver'ına devret
+    // ripUrl prop olarak gelmemişse doğrudan 4973 oyunluk katalogdan tam başlık veya AppID ile bul
+    let targetRipUrl = ripUrl || "";
+    if (!targetRipUrl) {
+      const match = ALL_STEAMRIP_GAMES.find(
+        (g) => (appId && g.appId === appId) || g.title.toLowerCase() === gameName.toLowerCase()
+      );
+      if (match && match.ripUrl) {
+        targetRipUrl = match.ripUrl;
+      }
+    }
+
+    console.log(`[İndirme Başlat] Oyun: ${gameName}, AppID: ${appId}, ripUrl: ${targetRipUrl}`);
+
     window.electronAPI?.startDownload({
       gameTitle: gameName,
       appId: appId,
       directUrl: "",
-      ripUrl: ripUrl || "",
+      ripUrl: targetRipUrl,
       host: "SteamRIP",
     });
   };

@@ -469,11 +469,44 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
       await crawlerWin.loadURL(searchUrl);
       await new Promise((r) => setTimeout(r, 2500));
 
-      const postUrls = await crawlerWin.webContents.executeJavaScript(`
-        Array.from(document.querySelectorAll("a")).map(a => a.href).filter(h => h.startsWith("https://steamrip.com/") && h.includes("-free-download"))
+      const foundLinks = await crawlerWin.webContents.executeJavaScript(`
+        (() => {
+          return Array.from(document.querySelectorAll("a"))
+            .map(a => ({
+              text: a.innerText.trim(),
+              href: a.href
+            }))
+            .filter(x => x.href.startsWith("https://steamrip.com/") && x.href.includes("-free-download"));
+        })()
       `);
 
-      targetPostUrl = postUrls && postUrls.length > 0 ? postUrls[0] : null;
+      // Tam başlık eşleşmesi ara (Örn: "Half-Life" arandığında "Half-Life 2" yerine tam eşleşeni al)
+      const cleanLower = cleanTitle.toLowerCase();
+      let bestMatch = null;
+
+      // 1. Öncelik: Başlığı tam eşleşen makale
+      for (const item of foundLinks) {
+        const itemClean = item.text.toLowerCase().replace(/\s*free download.*/i, "").trim();
+        if (itemClean === cleanLower) {
+          bestMatch = item.href;
+          break;
+        }
+      }
+
+      // 2. Öncelik: URL slug'ı tam eşleşen
+      if (!bestMatch) {
+        const exactSlug = cleanLower.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        for (const item of foundLinks) {
+          if (item.href.includes(`/${exactSlug}-free-download`)) {
+            bestMatch = item.href;
+            break;
+          }
+        }
+      }
+
+      // 3. Fallback: İlk sonuç
+      targetPostUrl = bestMatch || (foundLinks.length > 0 ? foundLinks[0].href : null);
+
       if (!targetPostUrl) {
         const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         targetPostUrl = `https://steamrip.com/${slug}-free-download/`;
