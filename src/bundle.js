@@ -18766,6 +18766,15 @@ var require_jsx_dev_runtime = __commonJS(function(exports, module) {
 // src/index.tsx
 var import_client = __toESM(require_client());
 
+// src/data/app_direct_covers.json
+var app_direct_covers_default = {
+  "3768760": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3768760/be65391533f072e79699be70ef2d47b7b2ac57ee/header_alt_assets_5.jpg?t=1793979129",
+  "1895900": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1895900/e2406ff9c7687c9a2a4775092208d8691b04738b/header.jpg?t=1773351034",
+  "3949550": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949550/0d198ca7648797d7ab2765f362100aa0f7f3eeb9/header.jpg?t=1789047112",
+  "3992580": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3992580/fdfdd5d0a81071bf108570cdcf7f20541f24a52c/header.jpg?t=1782387545",
+  "1439750": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1439750/header.jpg?t=1757962768"
+};
+
 // src/App.tsx
 var import_react2 = __toESM(require_react());
 
@@ -18889,7 +18898,7 @@ var steamrip_catalog_default = [
   {
     title: "9-Bit Armies: A Bit Too Far",
     ripUrl: "https://steamrip.com/9-bit-armies-a-bit-too-far-free-download-2/",
-    appId: 3680670
+    appId: 1439750
   },
   {
     title: "911 Operator",
@@ -44448,7 +44457,9 @@ var GameCard = ({ game, onOpenDetail, failedImgs, onImgError }) => {
   };
   const [imgStage, setImgStage] = import_react2.useState(0);
   const hasValidAppId = game.appId && game.appId > 0;
+  const directCover = hasValidAppId ? app_direct_covers_default[String(game.appId)] : null;
   const candidateUrls = hasValidAppId ? [
+    ...directCover ? [directCover] : [],
     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`,
     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/capsule_616x353.jpg`,
     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/header.jpg`

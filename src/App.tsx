@@ -1,3 +1,4 @@
+import directCoversMap from "./data/app_direct_covers.json";
 import React, { useState, useRef, useEffect } from "react";
 import { GameDetailPage } from "./components/GameDetailPage";
 import {
@@ -128,10 +129,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, onOpenDetail, failedImgs, onI
 
   const [imgStage, setImgStage] = useState<number>(0);
   const hasValidAppId = game.appId && game.appId > 0;
+  const directCover = hasValidAppId ? (directCoversMap as Record<string, string>)[String(game.appId)] : null;
 
-  // Sıralı CDN kaynakları: dikey kütüphane afişi -> kapsül afiş -> header
+  // Sıralı CDN kaynakları: doğrudan bilinen görsel -> dikey kütüphane afişi -> kapsül afiş -> header
   const candidateUrls = hasValidAppId
     ? [
+        ...(directCover ? [directCover] : []),
         `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/library_600x900.jpg`,
         `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/capsule_616x353.jpg`,
         `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appId}/header.jpg`,
