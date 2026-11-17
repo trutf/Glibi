@@ -1558,3 +1558,34 @@ html, body, #root {
 .game-card:hover .placeholder-title {
   color: #c9cccf;
 }
+
+/* ⏳ Minimalist Oyun Detay Yükleme Ekranı (Temiz & Göz Yormayan) */
+.detail-loading-overlay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #161718;
+}
+
+.detail-loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #282a2b;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinDetail 0.8s linear infinite;
+}
+
+@keyframes spinDetail {
+  to { transform: rotate(360deg); }
+}
+
+.detail-loading-text {
+  font-size: 11px;
+  color: #66696b;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}

@@ -523,9 +523,21 @@ async function resolveSteamripWithElectron(gameTitle, appId, tempArchive, extrac
           text: a.innerText.trim(),
           href: a.href
         }));
+
+        // Tüm indirme sunucusu linklerini topla
+        const filehosts = links
+          .map(x => x.href)
+          .filter(h => h && (h.includes("bzzhr") || h.includes("buzzheavier") || h.includes("gofile.io") || h.includes("megadb") || h.includes("1fichier")));
+
+        // 1. Mutlak Öncelik: Buzzheavier (Doğrudan hızlı stream ve token destekler)
+        const buzz = filehosts.find(h => h.includes("bzzhr") || h.includes("buzzheavier"));
+        if (buzz) return [buzz];
+
+        // 2. Öncelik: 'DOWNLOAD HERE' butonu
         const dlBtn = links.find(x => x.text.toLowerCase().includes("download here"));
         if (dlBtn && dlBtn.href) return [dlBtn.href];
-        return links.map(x => x.href).filter(h => h.includes("bzzhr") || h.includes("buzzheavier") || h.includes("gofile.io") || h.includes("megadb"));
+
+        return filehosts;
       })()
     `);
 

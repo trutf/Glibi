@@ -149,6 +149,12 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
         <div style={{ width: 70 }} />
       </div>
 
+      {loading ? (
+        <div className="detail-loading-overlay">
+          <div className="detail-loading-spinner" />
+          <span className="detail-loading-text">Yükleniyor...</span>
+        </div>
+      ) : (
       <div className="detail-scroll-content">
         {/* Üst Başlık & Saf Tipografi Bilgileri */}
         <div className="detail-header-pure">
@@ -442,6 +448,7 @@ export const GameDetailPage: React.FC<GameDetailPageProps> = ({
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

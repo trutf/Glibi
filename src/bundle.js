@@ -18772,7 +18772,14 @@ var app_direct_covers_default = {
   "1895900": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1895900/e2406ff9c7687c9a2a4775092208d8691b04738b/header.jpg?t=1773351034",
   "3949550": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949550/0d198ca7648797d7ab2765f362100aa0f7f3eeb9/header.jpg?t=1789047112",
   "3992580": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3992580/fdfdd5d0a81071bf108570cdcf7f20541f24a52c/header.jpg?t=1782387545",
-  "1439750": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1439750/header.jpg?t=1757962768"
+  "1439750": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1439750/header.jpg?t=1757962768",
+  "435100": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/435100/header.jpg?t=1778169512",
+  "3805420": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3805420/e9539da940a8ded032a35d95950d2f82c547a806/header.jpg?t=1758311175",
+  "4512570": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4512570/3bb6001526b9f15a81b0c59d006012b8702d2059/header.jpg?t=1786200481",
+  "3694480": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3694480/eb2bc9581341ce206ef001f3e0700d08c513b24f/header.jpg?t=1787881131",
+  "2713000": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2713000/fd497979801c646561040243e1aa64a73d11f13a/header.jpg?t=1790254824",
+  "662840": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/662840/header.jpg?t=1522447132",
+  "681700": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/681700/header.jpg?t=1699851636"
 };
 
 // src/App.tsx
@@ -43975,7 +43982,18 @@ var GameDetailPage = ({
           }, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+      loading ? /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+        className: "detail-loading-overlay",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            className: "detail-loading-spinner"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("span", {
+            className: "detail-loading-text",
+            children: "Yükleniyor..."
+          }, undefined, false, undefined, this)
+        ]
+      }, undefined, true, undefined, this) : /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
         className: "detail-scroll-content",
         children: [
           /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
