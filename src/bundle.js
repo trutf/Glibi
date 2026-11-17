@@ -18953,7 +18953,7 @@ var steamrip_catalog_default = [
   {
     title: "A Hat in Time Ultimate Edition",
     ripUrl: "https://steamrip.com/a-hat-in-time-ultimate-edition-free-download-1g/",
-    appId: 0
+    appId: 253230
   },
   {
     title: "A House of Thieves",
@@ -19358,7 +19358,7 @@ var steamrip_catalog_default = [
   {
     title: "Alan Wake Remastered",
     ripUrl: "https://steamrip.com/alan-wake-free-download-a1/",
-    appId: 0
+    appId: 108710
   },
   {
     title: "Alaska Gold Fever",
@@ -19668,7 +19668,7 @@ var steamrip_catalog_default = [
   {
     title: "Anno 2070 Complete Edition",
     ripUrl: "https://steamrip.com/anno-2070-complete-edition-free-download-m1/",
-    appId: 0
+    appId: 48240
   },
   {
     title: "ANNO: Mutationem",
@@ -20238,7 +20238,7 @@ var steamrip_catalog_default = [
   {
     title: "Back in Service: a Metro Driver",
     ripUrl: "https://steamrip.com/back-in-service-a-metro-driver-free-download/",
-    appId: 0
+    appId: 3331320
   },
   {
     title: "Back to the Dawn",
@@ -20498,7 +20498,7 @@ var steamrip_catalog_default = [
   {
     title: "Batman – The Telltale Series",
     ripUrl: "https://steamrip.com/batman-the-telltale-series-free-download/",
-    appId: 0
+    appId: 2215200
   },
   {
     title: "Batman Arkham Knight Premium",
@@ -20508,27 +20508,27 @@ var steamrip_catalog_default = [
   {
     title: "Batman Arkham Origins",
     ripUrl: "https://steamrip.com/batman-arkham-origins-free-download/",
-    appId: 0
+    appId: 209000
   },
   {
     title: "Batman Arkham VR",
     ripUrl: "https://steamrip.com/batman-arkham-vr-free-download/",
-    appId: 0
+    appId: 502820
   },
   {
     title: "Batman: Arkham Asylum GOTY",
     ripUrl: "https://steamrip.com/batman-arkham-asylum-goty-free-download-1m/",
-    appId: 0
+    appId: 2215200
   },
   {
     title: "Batman: Arkham City – GOTY",
     ripUrl: "https://steamrip.com/batman-arkham-city-goty-free-download-1t/",
-    appId: 0
+    appId: 2215200
   },
   {
     title: "Batman: The Enemy Within – The Telltale Series",
     ripUrl: "https://steamrip.com/batman-the-enemy-within-the-telltale-series-free-download-1e/",
-    appId: 0
+    appId: 2215200
   },
   {
     title: "Battle Bands: Rock & Roll Deckbuilder",
@@ -21678,32 +21678,32 @@ var steamrip_catalog_default = [
   {
     title: "Call of Duty 2",
     ripUrl: "https://steamrip.com/call-of-duty-2-free-download-y2/",
-    appId: 0
+    appId: 2630
   },
   {
     title: "Call of Duty 4: Modern Warfare",
     ripUrl: "https://steamrip.com/call-of-duty-4-modern-warfare-free-download-3l/",
-    appId: 0
+    appId: 4435490
   },
   {
     title: "Call of Duty Deluxe Edition",
     ripUrl: "https://steamrip.com/call-of-duty-deluxe-edition-free-download-2s/",
-    appId: 0
+    appId: 517831
   },
   {
     title: "Call of Duty Modern: Warfare 4",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-4-free-download/",
-    appId: 0
+    appId: 4435490
   },
   {
     title: "Call of Duty: Black Ops 4",
     ripUrl: "https://steamrip.com/call-of-duty-black-ops-4-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Black Ops 6",
     ripUrl: "https://steamrip.com/call-of-duty-black-ops-6-campaign-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Black Ops Cold War",
@@ -21728,7 +21728,7 @@ var steamrip_catalog_default = [
   {
     title: "Call of Duty: Ghosts",
     ripUrl: "https://steamrip.com/call-of-duty-ghosts-free-download-1q/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Infinite Warfare",
@@ -21738,42 +21738,42 @@ var steamrip_catalog_default = [
   {
     title: "Call of Duty: Modern Warfare 2",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-2-free-download-13/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare 2 Remastered",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-2-remastered-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare 2019",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-2019-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare 3",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-3-free-download-3h/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare II",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-ii-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare III",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-iii-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Modern Warfare Remastered",
     ripUrl: "https://steamrip.com/call-of-duty-modern-warfare-remastered-2017-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: Vanguard",
     ripUrl: "https://steamrip.com/call-of-duty-vanguard-free-download/",
-    appId: 0
+    appId: 1938090
   },
   {
     title: "Call of Duty: World at War",
@@ -23048,7 +23048,7 @@ var steamrip_catalog_default = [
   {
     title: "CRISIS CORE –FINAL FANTASY VII– REUNION",
     ripUrl: "https://steamrip.com/crisis-core-final-fantasy-vii-reunion-free-download/",
-    appId: 0
+    appId: 1608070
   },
   {
     title: "Crisol: Theater of Idols",
@@ -23588,12 +23588,12 @@ var steamrip_catalog_default = [
   {
     title: "Dead Space 2008",
     ripUrl: "https://steamrip.com/dead-space-2008-free-download-u2/",
-    appId: 0
+    appId: 17470
   },
   {
     title: "Dead Space 3",
     ripUrl: "https://steamrip.com/dead-space-3-free-download-r6/",
-    appId: 0
+    appId: 1238060
   },
   {
     title: "Dead Take",
@@ -24228,7 +24228,7 @@ var steamrip_catalog_default = [
   {
     title: "Dishonored GOTY",
     ripUrl: "https://steamrip.com/dishonored-free-download-h1/",
-    appId: 0
+    appId: 31292
   },
   {
     title: "Dishonored: Death of the Outsider",
@@ -25968,12 +25968,12 @@ var steamrip_catalog_default = [
   {
     title: "Far Cry 6 Ultimate Edition",
     ripUrl: "https://steamrip.com/far-cry-6-ultimate-edition-free-download-z1/",
-    appId: 0
+    appId: 2369390
   },
   {
     title: "Far Cry",
     ripUrl: "https://steamrip.com/far-cry-free-download-5l/",
-    appId: 0
+    appId: 552520
   },
   {
     title: "Far Cry New Dawn",
@@ -26313,37 +26313,37 @@ var steamrip_catalog_default = [
   {
     title: "FINAL FANTASY",
     ripUrl: "https://steamrip.com/final-fantasy-free-download/",
-    appId: 0
+    appId: 39210
   },
   {
     title: "FINAL FANTASY II",
     ripUrl: "https://steamrip.com/final-fantasy-ii-free-download/",
-    appId: 0
+    appId: 1173780
   },
   {
     title: "Final Fantasy III (3D Remake)",
     ripUrl: "https://steamrip.com/final-fantasy-iii-3d-remake-free-download/",
-    appId: 0
+    appId: 239120
   },
   {
     title: "FINAL FANTASY III",
     ripUrl: "https://steamrip.com/final-fantasy-iii-free-download/",
-    appId: 0
+    appId: 1173790
   },
   {
     title: "Final Fantasy IV (3D Remake)",
     ripUrl: "https://steamrip.com/final-fantasy-iv-3d-remake-free-download/",
-    appId: 0
+    appId: 312750
   },
   {
     title: "FINAL FANTASY IV",
     ripUrl: "https://steamrip.com/final-fantasy-iv-free-download/",
-    appId: 0
+    appId: 1173800
   },
   {
     title: "FINAL FANTASY IV: THE AFTER YEARS",
     ripUrl: "https://steamrip.com/final-fantasy-iv-the-after-years-free-download/",
-    appId: 0
+    appId: 1173800
   },
   {
     title: "FINAL FANTASY IX",
@@ -26353,27 +26353,27 @@ var steamrip_catalog_default = [
   {
     title: "FINAL FANTASY TACTICS – The Ivalice Chronicles",
     ripUrl: "https://steamrip.com/final-fantasy-tactics-the-ivalice-chronicles-free-download/",
-    appId: 0
+    appId: 1004640
   },
   {
     title: "Final Fantasy Type-0 HD",
     ripUrl: "https://steamrip.com/final-fantasy-type-0-hd-free-download/",
-    appId: 0
+    appId: 340170
   },
   {
     title: "FINAL FANTASY V",
     ripUrl: "https://steamrip.com/final-fantasy-v-free-download-3s/",
-    appId: 0
+    appId: 1173810
   },
   {
     title: "FINAL FANTASY VI",
     ripUrl: "https://steamrip.com/final-fantasy-vi-free-download-1z/",
-    appId: 0
+    appId: 1173820
   },
   {
     title: "Final Fantasy VII",
     ripUrl: "https://steamrip.com/final-fantasy-vii-free-download/",
-    appId: 0
+    appId: 4354570
   },
   {
     title: "FINAL FANTASY VII REBIRTH",
@@ -26388,7 +26388,7 @@ var steamrip_catalog_default = [
   {
     title: "FINAL FANTASY VIII – REMASTERED",
     ripUrl: "https://steamrip.com/final-fantasy-viii-remastered-free-download/",
-    appId: 0
+    appId: 39150
   },
   {
     title: "FINAL FANTASY X/X-2 HD Remaster",
@@ -26398,7 +26398,7 @@ var steamrip_catalog_default = [
   {
     title: "FINAL FANTASY XII THE ZODIAC AGE",
     ripUrl: "https://steamrip.com/final-fantasy-xii-the-zodiac-age-free-download/",
-    appId: 0
+    appId: 595520
   },
   {
     title: "FINAL FANTASY XIII",
@@ -26408,7 +26408,7 @@ var steamrip_catalog_default = [
   {
     title: "FINAL FANTASY XIII-2",
     ripUrl: "https://steamrip.com/final-fantasy-xiii-2-free-download/",
-    appId: 0
+    appId: 292140
   },
   {
     title: "FINAL FANTASY XV WINDOWS EDITION",
@@ -28478,27 +28478,27 @@ var steamrip_catalog_default = [
   {
     title: "HITMAN 2",
     ripUrl: "https://steamrip.com/hitman-2-free-download-1i/",
-    appId: 0
+    appId: 6850
   },
   {
     title: "Hitman 2: Silent Assassin",
     ripUrl: "https://steamrip.com/hitman-2-silent-assassin-free-download/",
-    appId: 0
+    appId: 6850
   },
   {
     title: "Hitman Absolution",
     ripUrl: "https://steamrip.com/hitman-absolution-free-download-1i/",
-    appId: 0
+    appId: 203140
   },
   {
     title: "Hitman Blood Money",
     ripUrl: "https://steamrip.com/hitman-blood-money-free-download-h1/",
-    appId: 0
+    appId: 6860
   },
   {
     title: "HITMAN",
     ripUrl: "https://steamrip.com/hitman-free-download/",
-    appId: 0
+    appId: 1659040
   },
   {
     title: "HITMAN World of Assassination",
@@ -28508,12 +28508,12 @@ var steamrip_catalog_default = [
   {
     title: "Hitman: Codename 47",
     ripUrl: "https://steamrip.com/hitman-codename-47-free-download-1g/",
-    appId: 0
+    appId: 1659040
   },
   {
     title: "Hitman: Contracts",
     ripUrl: "https://steamrip.com/hitman-contracts-free-download/",
-    appId: 0
+    appId: 1659040
   },
   {
     title: "Hoa",
@@ -29618,7 +29618,7 @@ var steamrip_catalog_default = [
   {
     title: "Just Cause",
     ripUrl: "https://steamrip.com/just-cause-free-download/",
-    appId: 0
+    appId: 225540
   },
   {
     title: "Just Dance 2017",
@@ -30338,12 +30338,12 @@ var steamrip_catalog_default = [
   {
     title: "LEGO Batman 2 DC Super Heroes",
     ripUrl: "https://steamrip.com/lego-batman-2-dc-super-heroes-free-download/",
-    appId: 0
+    appId: 213330
   },
   {
     title: "LEGO Batman: Legacy of the Dark Knight",
     ripUrl: "https://steamrip.com/lego-batman-legacy-of-the-dark-knight-free-download/",
-    appId: 0
+    appId: 2215200
   },
   {
     title: "LEGO Batman: The Videogame",
@@ -30433,17 +30433,17 @@ var steamrip_catalog_default = [
   {
     title: "LEGO Star Wars III: The Clone Wars",
     ripUrl: "https://steamrip.com/lego-star-wars-iii-the-clone-wars-free-download/",
-    appId: 0
+    appId: 32510
   },
   {
     title: "LEGO STAR WARS The Force Awakens",
     ripUrl: "https://steamrip.com/lego-star-wars-the-force-awakens-free-download-1w/",
-    appId: 0
+    appId: 438640
   },
   {
     title: "LEGO Star Wars: The Complete Saga",
     ripUrl: "https://steamrip.com/lego-star-wars-the-complete-saga-free-download-t2/",
-    appId: 0
+    appId: 920210
   },
   {
     title: "LEGO Star Wars: The Skywalker Saga",
@@ -30628,7 +30628,7 @@ var steamrip_catalog_default = [
   {
     title: "LIGHTNING RETURNS: FINAL FANTASY XIII",
     ripUrl: "https://steamrip.com/lightning-returns-final-fantasy-xiii-free-download/",
-    appId: 0
+    appId: 345350
   },
   {
     title: "Lightyear Frontier",
@@ -31338,7 +31338,7 @@ var steamrip_catalog_default = [
   {
     title: "Marvel’s Spider-Man 2",
     ripUrl: "https://steamrip.com/marvels-spider-man-2-free-download-sp1/",
-    appId: 0
+    appId: 2651280
   },
   {
     title: "Marvel’s Spider-Man: Miles Morales",
@@ -31378,12 +31378,12 @@ var steamrip_catalog_default = [
   {
     title: "Mass Effect 3",
     ripUrl: "https://steamrip.com/mass-effect-3-free-download/",
-    appId: 0
+    appId: 1238020
   },
   {
     title: "Mass Effect: Andromeda Deluxe Edition",
     ripUrl: "https://steamrip.com/mass-effect-andromeda-deluxe-edition-free-download/",
-    appId: 0
+    appId: 1328670
   },
   {
     title: "Master Detective Archives: RAIN CODE Plus",
@@ -31683,7 +31683,7 @@ var steamrip_catalog_default = [
   {
     title: "Metro: Last Light Redux",
     ripUrl: "https://steamrip.com/metro-last-light-redux-free-download/",
-    appId: 0
+    appId: 2590240
   },
   {
     title: "Mewgenics",
@@ -32638,12 +32638,12 @@ var steamrip_catalog_default = [
   {
     title: "Need For Speed Hot Pursuit",
     ripUrl: "https://steamrip.com/need-for-speed-hot-pursuit-free-download-2i/",
-    appId: 0
+    appId: 1328660
   },
   {
     title: "Need for Speed Hot Pursuit Remastered",
     ripUrl: "https://steamrip.com/need-for-speed-hot-pursuit-remastered-free-download/",
-    appId: 0
+    appId: 1328660
   },
   {
     title: "Need for Speed Most Wanted Black Edition",
@@ -32663,7 +32663,7 @@ var steamrip_catalog_default = [
   {
     title: "Need for Speed Rivals",
     ripUrl: "https://steamrip.com/need-for-speed-rivals-free-download-2t/",
-    appId: 0
+    appId: 1262600
   },
   {
     title: "Need For Speed The Run",
@@ -35478,7 +35478,7 @@ var steamrip_catalog_default = [
   {
     title: "Resident Evil 4 Ultimate HD Edition",
     ripUrl: "https://steamrip.com/resident-evil-4-ultimate-hd-edition-free-download-1m/",
-    appId: 0
+    appId: 2050650
   },
   {
     title: "Resident Evil 5 Gold",
@@ -35493,7 +35493,7 @@ var steamrip_catalog_default = [
   {
     title: "Resident Evil Requiem",
     ripUrl: "https://steamrip.com/resident-evil-requiem-free-download/",
-    appId: 0
+    appId: 3764200
   },
   {
     title: "Resident Evil Revelations 2",
@@ -35503,7 +35503,7 @@ var steamrip_catalog_default = [
   {
     title: "Resident Evil Revelations",
     ripUrl: "https://steamrip.com/resident-evil-revelations-free-download/",
-    appId: 0
+    appId: 222480
   },
   {
     title: "Resident Evil: Operation Raccoon City",
@@ -36163,12 +36163,12 @@ var steamrip_catalog_default = [
   {
     title: "Saints Row 2",
     ripUrl: "https://steamrip.com/saints-row-2-free-download/",
-    appId: 0
+    appId: 9480
   },
   {
     title: "Saints Row",
     ripUrl: "https://steamrip.com/saints-row-free-download-x1/",
-    appId: 0
+    appId: 742420
   },
   {
     title: "Saints Row IV: Re-Elected",
@@ -36178,7 +36178,7 @@ var steamrip_catalog_default = [
   {
     title: "Saints Row: The Third Remastered",
     ripUrl: "https://steamrip.com/saints-row-the-third-remastered-free-download-1u/",
-    appId: 0
+    appId: 742420
   },
   {
     title: "Sally Face",
@@ -37278,7 +37278,7 @@ var steamrip_catalog_default = [
   {
     title: "Sniper Elite V2",
     ripUrl: "https://steamrip.com/sniper-elite-v2-free-download/",
-    appId: 0
+    appId: 63380
   },
   {
     title: "Sniper Ghost Warrior Contracts 2",
@@ -37403,7 +37403,7 @@ var steamrip_catalog_default = [
   {
     title: "Sonic & SEGA All-Stars Racing",
     ripUrl: "https://steamrip.com/sonic-sega-all-stars-racing-free-download/",
-    appId: 0
+    appId: 34190
   },
   {
     title: "Sonic Adventure 2",
@@ -37418,7 +37418,7 @@ var steamrip_catalog_default = [
   {
     title: "Sonic and All-Stars Racing Transformed Collection",
     ripUrl: "https://steamrip.com/sonic-and-all-stars-racing-transformed-collection-free-download/",
-    appId: 0
+    appId: 212480
   },
   {
     title: "Sonic CD",
@@ -37428,27 +37428,27 @@ var steamrip_catalog_default = [
   {
     title: "Sonic Colors: Ultimate",
     ripUrl: "https://steamrip.com/sonic-colors-ultimate-free-download/",
-    appId: 0
+    appId: 2055290
   },
   {
     title: "Sonic Forces",
     ripUrl: "https://steamrip.com/sonic-forces-free-download-1i/",
-    appId: 0
+    appId: 637100
   },
   {
     title: "Sonic Frontiers – Digital Deluxe Edition",
     ripUrl: "https://steamrip.com/sonic-frontiers-free-download/",
-    appId: 0
+    appId: 1237320
   },
   {
     title: "Sonic Generations",
     ripUrl: "https://steamrip.com/sonic-generations-free-download-1l/",
-    appId: 0
+    appId: 71340
   },
   {
     title: "Sonic Lost World",
     ripUrl: "https://steamrip.com/sonic-lost-world-free-download-1i/",
-    appId: 0
+    appId: 329440
   },
   {
     title: "Sonic Mania",
@@ -37458,12 +37458,12 @@ var steamrip_catalog_default = [
   {
     title: "Sonic the Hedgehog 4 – Episode II",
     ripUrl: "https://steamrip.com/sonic-the-hedgehog-4-episode-ii-free-download/",
-    appId: 0
+    appId: 203650
   },
   {
     title: "Sonic the Hedgehog 4: Episode 1",
     ripUrl: "https://steamrip.com/sonic-the-hedgehog-4-episode-1-free-download/",
-    appId: 0
+    appId: 203650
   },
   {
     title: "Sonic Unleashed",
@@ -37878,22 +37878,22 @@ var steamrip_catalog_default = [
   {
     title: "STAR WARS Battlefront II",
     ripUrl: "https://steamrip.com/star-wars-battlefront-ii-free-download/",
-    appId: 0
+    appId: 1237950
   },
   {
     title: "Star Wars Empire at War: Gold Pack",
     ripUrl: "https://steamrip.com/star-wars-empire-at-war-gold-pack-free-download-1o/",
-    appId: 0
+    appId: 32470
   },
   {
     title: "STAR WARS Jedi Knight II – Jedi Outcast",
     ripUrl: "https://steamrip.com/star-wars-jedi-knight-ii-jedi-outcast-free-download/",
-    appId: 0
+    appId: 6030
   },
   {
     title: "STAR WARS Jedi: Fallen Order",
     ripUrl: "https://steamrip.com/star-wars-jedi-fallen-order-free-download-o3/",
-    appId: 0
+    appId: 1774580
   },
   {
     title: "STAR WARS Jedi: Survivor",
@@ -37903,7 +37903,7 @@ var steamrip_catalog_default = [
   {
     title: "Star Wars Outlaws",
     ripUrl: "https://steamrip.com/star-wars-outlaws-free-download/",
-    appId: 0
+    appId: 2842040
   },
   {
     title: "STAR WARS Republic Commando",
@@ -37913,47 +37913,47 @@ var steamrip_catalog_default = [
   {
     title: "STAR WARS Zero Company",
     ripUrl: "https://steamrip.com/star-wars-zero-company-free-download/",
-    appId: 0
+    appId: 2075800
   },
   {
     title: "STAR WARS: Battlefront Classic Collection",
     ripUrl: "https://steamrip.com/star-wars-battlefront-classic-collection-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "STAR WARS: Bounty Hunter",
     ripUrl: "https://steamrip.com/star-wars-bounty-hunter-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "STAR WARS: Dark Forces Remaster",
     ripUrl: "https://steamrip.com/star-wars-dark-forces-remaster-free-download-s1/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "STAR WARS: Episode I: Jedi Power Battles",
     ripUrl: "https://steamrip.com/star-wars-episode-i-jedi-power-battles-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "STAR WARS: Galactic Racer",
     ripUrl: "https://steamrip.com/star-wars-galactic-racer-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "Star Wars: Knights of the Old Republic",
     ripUrl: "https://steamrip.com/star-wars-knights-of-the-old-republic-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "STAR WARS: Squadrons",
     ripUrl: "https://steamrip.com/star-wars-squadrons-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "Star Wars: The Force Unleashed II",
     ripUrl: "https://steamrip.com/star-wars-the-force-unleashed-ii-free-download/",
-    appId: 0
+    appId: 4078430
   },
   {
     title: "Starbound",
@@ -38268,7 +38268,7 @@ var steamrip_catalog_default = [
   {
     title: "STRANGER OF PARADISE FINAL FANTASY ORIGIN",
     ripUrl: "https://steamrip.com/stranger-of-paradise-final-fantasy-origin-free-download/",
-    appId: 0
+    appId: 1358700
   },
   {
     title: "Stranger Things VR",
@@ -39093,7 +39093,7 @@ var steamrip_catalog_default = [
   {
     title: "Team Sonic Racing",
     ripUrl: "https://steamrip.com/team-sonic-racing-free-download-t3/",
-    appId: 0
+    appId: 785260
   },
   {
     title: "Teamfight Manager 2",
@@ -42648,7 +42648,7 @@ var steamrip_catalog_default = [
   {
     title: "Watch Dogs 2",
     ripUrl: "https://steamrip.com/watch-dogs-2-free-download-p5/",
-    appId: 0
+    appId: 447040
   },
   {
     title: "Watch Dogs Digital Deluxe Edition",
@@ -42658,7 +42658,7 @@ var steamrip_catalog_default = [
   {
     title: "Watch Dogs: Legion",
     ripUrl: "https://steamrip.com/watch-dogs-legion-free-download-w5/",
-    appId: 0
+    appId: 447040
   },
   {
     title: "Waterpark Simulator",
@@ -43128,7 +43128,7 @@ var steamrip_catalog_default = [
   {
     title: "Wolfenstein",
     ripUrl: "https://steamrip.com/wolfenstein-2009-free-download-f4/",
-    appId: 0
+    appId: 201810
   },
   {
     title: "Wolfenstein II: The New Colossus",
@@ -43383,47 +43383,47 @@ var steamrip_catalog_default = [
   {
     title: "Yakuza 0 Director’s Cut",
     ripUrl: "https://steamrip.com/yakuza-0-directors-cut-free-download/",
-    appId: 0
+    appId: 2988580
   },
   {
     title: "Yakuza 0",
     ripUrl: "https://steamrip.com/yakuza-0-free-download-y8/",
-    appId: 0
+    appId: 2988580
   },
   {
     title: "Yakuza 3 Remastered",
     ripUrl: "https://steamrip.com/yakuza-3-remastered-free-download/",
-    appId: 0
+    appId: 1088710
   },
   {
     title: "Yakuza 4 Remastered",
     ripUrl: "https://steamrip.com/yakuza-4-remastered-free-download/",
-    appId: 0
+    appId: 1105500
   },
   {
     title: "Yakuza 5 Remastered",
     ripUrl: "https://steamrip.com/yakuza-5-remastered-free-download/",
-    appId: 0
+    appId: 1105510
   },
   {
     title: "Yakuza 6: The Song of Life",
     ripUrl: "https://steamrip.com/yakuza-6-the-song-of-life-free-download/",
-    appId: 0
+    appId: 1388590
   },
   {
     title: "Yakuza Kiwami 2",
     ripUrl: "https://steamrip.com/yakuza-kiwami-2-free-download/",
-    appId: 0
+    appId: 3717340
   },
   {
     title: "Yakuza Kiwami",
     ripUrl: "https://steamrip.com/yakuza-kiwami-free-download/",
-    appId: 0
+    appId: 3717330
   },
   {
     title: "Yakuza: Like A Dragon Legendary Hero Edition",
     ripUrl: "https://steamrip.com/yakuza-like-a-dragon-legendary-hero-edition-free-download/",
-    appId: 0
+    appId: 2988580
   },
   {
     title: "Yaoling: Mythical Journey",
@@ -43648,24 +43648,43 @@ var steamrip_catalog_default = [
 ];
 
 // src/services/steamCatalog.ts
-var ALL_STEAMRIP_GAMES = steamrip_catalog_default.map((item, index) => {
+var withCovers = [];
+var withoutCovers = [];
+steamrip_catalog_default.forEach((item, index) => {
   const safeId = item.title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-  return {
+  const hasAppId = item.appId && item.appId > 0;
+  const hasDirect = app_direct_covers_default[String(item.appId)];
+  const hasCover = Boolean(hasAppId || hasDirect);
+  const gameObj = {
     id: `rip_${index}_${safeId}`,
     appId: item.appId || 0,
     title: item.title,
-    ripUrl: item.ripUrl
+    ripUrl: item.ripUrl,
+    hasCover
   };
+  if (hasCover) {
+    withCovers.push(gameObj);
+  } else {
+    withoutCovers.push(gameObj);
+  }
 });
-var DEFAULT_POPULAR_GAMES = ALL_STEAMRIP_GAMES.slice(0, 500);
+var ALL_STEAMRIP_GAMES = [...withCovers, ...withoutCovers];
+var DEFAULT_POPULAR_GAMES = ALL_STEAMRIP_GAMES;
 async function fetchTopSteamGames() {
   return ALL_STEAMRIP_GAMES;
 }
 async function searchSteamStore(query) {
   const q = query.toLowerCase().trim();
   if (!q)
-    return ALL_STEAMRIP_GAMES.slice(0, 72);
-  return ALL_STEAMRIP_GAMES.filter((g) => g.title.toLowerCase().includes(q));
+    return ALL_STEAMRIP_GAMES;
+  const filtered = ALL_STEAMRIP_GAMES.filter((g) => g.title.toLowerCase().includes(q));
+  return filtered.sort((a, b) => {
+    if (a.hasCover && !b.hasCover)
+      return -1;
+    if (!a.hasCover && b.hasCover)
+      return 1;
+    return 0;
+  });
 }
 
 // src/components/GameDetailPage.tsx
